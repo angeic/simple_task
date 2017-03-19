@@ -39,7 +39,7 @@ class Task(db.Model):
     update_time = db.Column(db.DateTime(), onupdate=func.now())
     datetime = db.Column(db.DateTime())
     status = db.Column(db.SmallInteger(), default=0)
-    public_level = db.Column(db.SmallInteger(),default=0)
+    public_level = db.Column(db.SmallInteger(), default=0)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
 
     def __init__(self, title):

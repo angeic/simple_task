@@ -11,7 +11,7 @@ manager.add_command('server', Server())
 
 @manager.shell
 def make_shell_context():
-    return dict(app=app,db=db, user=User, task=Task)
+    return dict(app=app, db=db, user=User, task=Task)
 
 
 if __name__ == '__main__':

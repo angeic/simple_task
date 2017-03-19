@@ -1,3 +1,7 @@
 .idea/*
 env/*
-webapp/__pycache__*
+
+
+__pycache__/*
+*/__pycache__/*
+*/*/__pycache__/*
