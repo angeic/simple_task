@@ -18,14 +18,17 @@ def main():
     form = DoneForm()
     if form.validate_on_submit():
         task = Task.query.filter_by(id=form.task_id.data).first()
-        Task.query.filter_by(id=form.task_id.data).update({
-            'status': 1,
-            'done_time': datetime.now(),
-            'overtime': task.is_overtime()
-        })
-        db.session.commit()
-        flash('任务成功完成！', category='info')
-        return redirect(url_for('task.main'))
+        if session['user_id'] == task.user_id:
+            Task.query.filter_by(id=form.task_id.data).update({
+                'status': 1,
+                'done_time': datetime.now(),
+                'overtime': task.is_overtime()
+            })
+            db.session.commit()
+            flash('任务成功完成！', category='info')
+            return redirect(url_for('task.main'))
+        else:
+            flash('操作异常，请重新操作', category='warning')
     return render_template('task/task.html',
                            title='任务列表',
                            tasks=tasks,
@@ -74,7 +77,10 @@ def edit(task_id):
     task = Task.query.get_or_404(task_id)
     user = User.query.filter_by(id=session['user_id']).first()
     if task.user_id != user.id:
-        flash('对不起，只有创建人才能修改任务，您无权限修改该任务！', category='info')
+        flash('对不起，只有创建人才能修改任务，您无权限修改该任务！', category='warning')
+        return redirect(url_for('task.main'))
+    if task.status == 1 and task.user_id == user.id:
+        flash('该任务已经完成，无法再修改', category='warning')
         return redirect(url_for('task.main'))
 
     form = EditForm()

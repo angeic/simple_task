@@ -108,8 +108,6 @@ class DoneForm(FlaskForm):
     task_id = IntegerField('任务ID', validators=[DataRequired()])
     done_submit = SubmitField('确认完成')
 
-
-
     def validate(self):
         check_validate = super(DoneForm, self).validate()
 
@@ -119,6 +117,9 @@ class DoneForm(FlaskForm):
         task = Task.query.get_or_404(self.task_id.data)
 
         if not task or task.status != 0:
+            self.task_id.errors.append(
+                '操作有误，请刷新页面后重新操作'
+            )
             return False
 
         return True
