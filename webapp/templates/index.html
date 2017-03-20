@@ -13,13 +13,9 @@
         <div class="form-groups">
             {{login_form.username.label}}{%if login_form.username.errors%}{% for e in login_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
             {{login_form.username(class='form-control')}}
-        </div>
-        <div class="form-groups">
             {{login_form.password.label}}{% if login_form.password.errors %}{% for e in login_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
             {{login_form.password(class='form-control')}}
-        </div>
-        <div class="form-groups">
-            {{login_form.remember.label}}{{login_form.remember()}}
+            {{login_form.remember.label}}{{login_form.remember(class='checkbox')}}
         </div>
         {{ login_form.login_submit(class="btn btn-primary") }}
     </form>
@@ -33,12 +29,8 @@
         <div class="form-groups">
             {{register_form.username.label}}{%if register_form.username.errors%}{% for e in register_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
             {{register_form.username(class='form-control')}}
-        </div>
-        <div class="form-groups">
             {{register_form.password.label}}{% if register_form.password.errors %}{% for e in register_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
             {{register_form.password(class='form-control')}}
-        </div>
-        <div class="form-groups">
             {{register_form.password_verify.label}}{% if register_form.password_verify.errors %}{% for e in register_form.password_verify.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
             {{register_form.password_verify(class='form-control')}}
         </div>

@@ -1,0 +1,23 @@
+{% macro task_navigate() %}
+<div class="col-lg-9">
+    <div class="row">
+        <ul>
+            <li><a href="{{url_for('task.add')}}">创建任务</a></li>
+            <li><a href="{{url_for('task.main')}}">{% if request.path == url_for('task.main') %}<b>任务列表</b>{%else%}任务列表{%endif%}</a></li>
+            <li><a href="{{url_for('task.done')}}">{% if request.path == url_for('task.done') %}<b>已完成</b>{%else%}已完成{%endif%}</a></li>
+            <li>朋友圈</li>
+        </ul>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro task_sidebar(user) %}
+    <div class ="col-lg-3">
+        <div class = "row">
+            <h2>{{user.username}}</h2>
+        </div>
+        <div class="row">
+            创建了{{ user.count_all()| length }}个任务，完成了{{ user.count_done()|length }}个任务
+        </div>
+    </div>
+{% endmacro %}

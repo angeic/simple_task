@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, render_template, session, flash
+from flask import Flask, redirect, url_for, render_template, session, flash, g
 from webapp.config import DevConfig
 from .models import db, User, Task
 from .form import LoginForm, RegisterForm
@@ -30,6 +30,8 @@ def create_app(object_name):
             user = User.query.filter_by(username=login_form.username.data).first()
             login_user(user, remember=login_form.remember.data)
             flash('欢迎回来，{}'.format(user.username), category='success')
+            g.user = user
+            return redirect(url_for('task.main'))
         return render_template('index.html', login_form=login_form, register_form=register_form)
 
     @app.route('/logout')
