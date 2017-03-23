@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, render_template, session, flash, g
+from flask import Flask, redirect, url_for, render_template, session, flash, g, request
 from webapp.config import DevConfig
 from .models import db, User, Task
 from .form import LoginForm, RegisterForm
@@ -21,6 +21,7 @@ def create_app(object_name):
     def index():
         if 'user_id' in session:
             return redirect(url_for('task.main'))
+        action = request.args.get('action')
         login_form = LoginForm()
         register_form = RegisterForm()
         if register_form.validate_on_submit():
@@ -32,7 +33,7 @@ def create_app(object_name):
             flash('欢迎回来，{}'.format(user.username), category='success')
             g.user = user
             return redirect(url_for('task.main'))
-        return render_template('index.html', login_form=login_form, register_form=register_form)
+        return render_template('index.html', login_form=login_form, register_form=register_form,action=action)
 
     @app.route('/logout')
     def logout():
@@ -42,6 +43,10 @@ def create_app(object_name):
     @app.errorhandler(404)
     def page_not_found(error):
         return render_template('404.html'), 404
+
+    @app.errorhandler(403)
+    def forbidden(error):
+        return render_template('403.html'), 403
 
     @app.errorhandler(500)
     def error_500(error):

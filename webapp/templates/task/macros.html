@@ -1,21 +1,52 @@
 {% macro task_navigate() %}
-<div class="col-lg-9">
-    <div class="row">
-        <ul>
-            <li><a href="{{url_for('task.add')}}">创建任务</a></li>
-            <li><a href="{{url_for('task.main')}}">{% if request.path == url_for('task.main') %}<b>任务列表</b>{%else%}任务列表{%endif%}</a></li>
-            <li><a href="{{url_for('task.done')}}">{% if request.path == url_for('task.done') %}<b>已完成</b>{%else%}已完成{%endif%}</a></li>
-            <li>朋友圈</li>
-        </ul>
-    </div>
-</div>
+
+
+
+<!-- start navigation -->
+<nav class="navbar navbar-default" role="navigation">
+	<div class="container-fluid">
+	    <div class="navbar-header">
+		    <a class="navbar-brand" href="{{url_for('task.add')}}">创建任务</a>
+	    </div>
+        <div>
+            <ul class="nav navbar-nav">
+                <li {% if request.path == url_for('task.main') %} class="active" {%else%}{%endif%}><a href="{{url_for('task.main')}}">任务列表</a></li>
+                <li {% if request.path == url_for('task.done') %} class="active" {%else%}{%endif%}><a href="{{url_for('task.done')}}">已完成</a></li>
+                <li {% if request.path == '/' %} class="active" {%else%}{%endif%}><a href="#">朋友圈</a></li>
+                <!--
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        Java
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">jmeter</a></li>
+                        <li><a href="#">EJB</a></li>
+                        <li><a href="#">Jasper Report</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">分离的链接</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">另一个分离的链接</a></li>
+                    </ul>
+                </li>
+                -->
+            </ul>
+        </div>
+	</div>
+</nav>
+
+
+    <!-- end navigation -->
+
 {% endmacro %}
 
 {% macro task_sidebar(user) %}
     <div class ="col-lg-3">
         <div class = "row">
             <h2>{{user.username}}</h2>
+            {{user.bio}}
         </div>
+
         <div class="row">
             创建了{{ user.count_all()| length }}个任务，完成了{{ user.count_done()|length }}个任务
         </div>

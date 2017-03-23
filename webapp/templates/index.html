@@ -2,41 +2,94 @@
 
 
 {% block body %}
+<div class="col-sm-4">
+</div>
 
-注册/登录
+{%if action == 'register' %}
 
-
-<div class="col-lg-12">
-    <h3>登录</h3>
-    <form method="post" >
-        {{login_form.hidden_tag()}}
-        <div class="form-groups">
-            {{login_form.username.label}}{%if login_form.username.errors%}{% for e in login_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-            {{login_form.username(class='form-control')}}
-            {{login_form.password.label}}{% if login_form.password.errors %}{% for e in login_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-            {{login_form.password(class='form-control')}}
-            {{login_form.remember.label}}{{login_form.remember(class='checkbox')}}
+<div class="col-sm-4">
+    <form method="post">{{register_form.hidden_tag()}}
+        <div class="row">
+            <div class="form-groups">
+                <ul >
+                    <li><a href="{{url_for('index') }}">登录</a></li>
+                    <li><a href="{{url_for('index',action='register')}}">注册</a></li>
+                </ul>
+            </div>
         </div>
-        {{ login_form.login_submit(class="btn btn-primary") }}
+        <div class="row">
+            <div class="form-groups">
+                {{register_form.username.label}}{%if register_form.username.errors%}{% for e in register_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                {{register_form.username(class='form-control')}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-groups">
+                {{register_form.email.label}}{%if register_form.email.errors%}{% for e in register_form.email.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                {{register_form.email(class='form-control')}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-groups">
+                {{register_form.password.label}}{% if register_form.password.errors %}{% for e in register_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                {{register_form.password(class='form-control')}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-groups">
+                {{register_form.password_verify.label}}{% if register_form.password_verify.errors %}{% for e in register_form.password_verify.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                {{register_form.password_verify(class='form-control')}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-groups">
+                {{ register_form.register_submit(class="btn btn-primary") }}
+            </div>
+        </div>
     </form>
 </div>
 
 
-<div class="col-lg-12">
-    <h3>注册</h3>
-    <form method="post">
-        {{register_form.hidden_tag()}}
-        <div class="form-groups">
-            {{register_form.username.label}}{%if register_form.username.errors%}{% for e in register_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-            {{register_form.username(class='form-control')}}
-            {{register_form.password.label}}{% if register_form.password.errors %}{% for e in register_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-            {{register_form.password(class='form-control')}}
-            {{register_form.password_verify.label}}{% if register_form.password_verify.errors %}{% for e in register_form.password_verify.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-            {{register_form.password_verify(class='form-control')}}
+{%else%}
+
+<div class="col-sm-4">
+    <form method="post" >{{login_form.hidden_tag()}}
+        <div class="row">
+            <div class="form-groups">
+                <ul >
+                    <li><a href="{{url_for('index') }}">登录</a></li>
+                    <li><a href="{{url_for('index',action='register')}}">注册</a></li>
+                </ul>
+            </div>
         </div>
-        {{ register_form.register_submit(class="btn btn-primary") }}
+        <div class="row">
+            <div class="form-groups">
+                {{login_form.username.label}}{%if login_form.username.errors%}{% for e in login_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                {{login_form.username(class='form-control')}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-groups">
+                {{login_form.password.label}}{% if login_form.password.errors %}{% for e in login_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                {{login_form.password(class='form-control')}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-groups">
+                <label for="remember">{{login_form.remember(class='checkbox')}}记住我</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-groups">
+                {{ login_form.login_submit(class="btn btn-primary") }}
+            </div>
+        </div>
     </form>
 </div>
 
+
+{%endif%}
+<div class="col-sm-4">
+</div>
 
 {%endblock%}

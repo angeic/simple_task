@@ -1,8 +1,17 @@
 {% extends "base.html" %}
-{% block title %}{{user.username}} - {{super()}}{% endblock %}
+{% block title %}{{display_user.username}} - {{super()}}{% endblock %}
 
 {% block body %}
 
-{{user.username}}
+当前页面用户{{display_user.username}}
+当前登录用户{{g.current_user}}
+是否关注{{is_follow}}
+<form method="post" >{{form.hidden_tag()}}
+    <div class="form-groups">
+    {%if is_follow %}{{form.follow_submit(class='btn btn-default btn-xs',value='取消关注')}}{% if form.follow_id.errors %}{% for e in form.follow_id.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+        {%else%}{{form.follow_submit(class='btn btn-success btn-xs',value='关注')}}{% if form.follow_id.errors %}{% for e in form.follow_id.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+        {%endif%}
+    </div>
+</form>
 
 {% endblock %}

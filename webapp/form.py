@@ -1,9 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, PasswordField, SubmitField, TextAreaField, DateTimeField, RadioField, IntegerField,HiddenField
-from wtforms.validators import DataRequired, Email, length, EqualTo
-from .models import User, db, Task
-from flask import session
+from wtforms import StringField, BooleanField, PasswordField, SubmitField, TextAreaField, DateTimeField, RadioField, IntegerField
+from wtforms.validators import DataRequired, Email, length, EqualTo, Optional
+from .models import User, db, Task, Follow
+from flask import session, g, flash
 from datetime import datetime
+
 
 class LoginForm(FlaskForm):
     username = StringField('账号', validators=[DataRequired('账号未填写')])
@@ -34,7 +35,8 @@ class LoginForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
-    username = StringField('账号', validators=[DataRequired('用户名为必填'), length(max=20, message='长度不可以超过20')])
+    username = StringField('账号', validators=[DataRequired('必须填写账号'), length(max=20, message='长度不可以超过20')])
+    email = StringField('Email',validators=[DataRequired('必须填写Email'), length(max=50, message='长度不能超过50'), Email(message='Email格式不正确')])
     password = PasswordField('密码', validators=[DataRequired(), length(8, 30, '密码长度必须在8-30位'), EqualTo('password_verify', '两次输入的密码不一致')])
     password_verify = PasswordField('确认密码', validators=[DataRequired(), length(8, 30, '密码长度必须在8-30位')])
     register_submit = SubmitField('注册')
@@ -52,8 +54,16 @@ class RegisterForm(FlaskForm):
             )
             return False
 
+        email = User.query.filter_by(email=self.email.data).first()
+        if email:
+            self.email.errors.append(
+                'Email地址已存在，请更换其他Email地址'
+            )
+            return False
+
         user_register = User(self.username.data)
         user_register.set_password(self.password.data)
+        user_register.email = self.email.data
         db.session.add(user_register)
         db.session.commit()
 
@@ -64,7 +74,8 @@ class TaskForm(FlaskForm):
     title = StringField('主题', validators=[DataRequired('未填写主题'), length(max=100, message='长度不能超过100')])
     text = TextAreaField('内容', validators=[DataRequired('未填写内容'), length(max=1000, message='长度不能超过1000')])
     deadline = DateTimeField('到期时间', validators=[DataRequired('未设置到期时间')])
-    public_level = RadioField('公开级别', choices=[('1', '仅自己可见'), ('2', '互相关注的好友可见'), ('3', '关注我的人可见'), ('4', '所有人可见')])
+    public_level = RadioField('公开级别', choices=[('1', '仅自己可见'), ('2', '好友可见'), ('3', '所有人可见')])
+    comment_allowed = BooleanField('允许评论', default=True)
     submit = SubmitField('提交')
 
     def validate(self):
@@ -86,22 +97,9 @@ class EditForm(FlaskForm):
     title = StringField('主题', validators=[DataRequired('未填写主题'), length(max=100, message='长度不能超过100')])
     text = TextAreaField('内容', validators=[DataRequired('未填写内容'), length(max=1000, message='长度不能超过1000')])
     deadline = DateTimeField('到期时间', validators=[DataRequired('未设置到期时间')])
-    public_level = RadioField('公开级别', choices=[('1', '仅自己可见'), ('2', '互相关注的好友可见'), ('3', '关注我的人可见'), ('4', '所有人可见')])
-    submit = SubmitField('提交')
-
-    def validate(self):
-        check_validate = super(EditForm, self).validate()
-
-        if not check_validate:
-            return False
-
-        if self.deadline.data < datetime.now():
-            self.deadline.errors.append(
-                '到期时间不能小于当前时间'
-            )
-            return False
-
-        return True
+    public_level = RadioField('公开级别', choices=[('1', '仅自己可见'), ('2', '互相关注的好友可见'), ('3', '所有人可见')])
+    comment_allowed = BooleanField('允许评论')
+    submit = SubmitField('修改')
 
 
 class DoneForm(FlaskForm):
@@ -123,3 +121,37 @@ class DoneForm(FlaskForm):
             return False
 
         return True
+
+
+class CommentForm(FlaskForm):
+    text = TextAreaField('评论内容', validators=[DataRequired('未填写内容'), length(max=1000, message='长度不能超过1000')])
+    submit = SubmitField('提交')
+
+
+class FollowForm(FlaskForm):
+    follow_id = IntegerField('被关注人ID', validators=[DataRequired()])
+    follow_submit = SubmitField('提交')
+
+    def validate(self):
+        check_validate = super(FollowForm, self).validate()
+
+        if not check_validate:
+            return False
+
+        if self.follow_id.data == g.current_user.id:
+            self.follow_id.errors.append(
+                '不要关注自己'
+            )
+            return False
+        return True
+
+    def cancl_follow(self):
+        follow = Follow.query.filter(Follow.user_id == g.current_user.id, Follow.follow_id == self.follow_id.data).first()
+        if follow.is_friend == 1:
+            Follow.query.filter(Follow.user_id == self.follow_id.data, Follow.follow_id == g.current_user.id).update({
+                'is_friend': 0
+            })
+            db.session.commit()
+        follow = Follow.query.filter(Follow.user_id == g.current_user.id, Follow.follow_id == self.follow_id.data).first()
+        db.session.delete(follow)
+        db.session.commit()

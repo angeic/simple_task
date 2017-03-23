@@ -1,24 +1,25 @@
 {% extends "base.html" %}
-{% import "task/macros.html" as macros %}
-{% block title %}{{title}} - {{super()}}{% endblock %}
+{% import "task/macros.html" as task_macros %}
+{% block title %}{{page_title}} - {{super()}}{% endblock %}
 
 {% block body %}
 
 <div class="col-lg-9">
-    {{ macros.task_navigate() }}
+{{ task_macros.task_navigate() }}
     <div class = "row">
         {% for task in tasks %}
         <div class="col-lg-12">
             <div class = "row">
-                <h3>{{ task.title }}</h3>
+                <h3><a href="{{url_for('task.page',task_id=task.id)}}">{{ task.title }}</a> <small><a href="{{url_for('task.edit',task_id=task.id)}}">编辑</a></small></h3>
+                <small>计划完成时间：{{task.deadline}} {% if task.done_time %}| 完成时间：{{task.done_time}}{%endif%}
+                    {% if task.is_overtime() %} | {{task.over_time() }}{%endif%}</small>
+
+
                 <p>{{ task.text }}</p>
-                <p>任务状态：{% if task.status == 0 %}进行中{% elif task.status == 1 %}已完成{% else %}暂停{% endif %} |
-                    最终期限：{{task.deadline}} {% if task.done_time %}| 完成时间：{{task.done_time}}{%endif%}
-                    {% if task.is_overtime() %} | 已超时{%endif%}
-                </p>
+                <small>{%if not task.comment_allowed%}评论关闭{%else%}{{ task.count_comments() | length }}个评论{%endif%}</small>
                 {%if request.path == url_for('task.main') %}
                 <form method="post" >{{form.hidden_tag()}}
-                    <div class="form-groups">{{form.task_id(value=task.id,readonly='True',display="none")}}{{form.done_submit()}}
+                    <div class="form-groups">{{form.task_id(value=task.id,readonly='True',style='display:none;')}}{{form.done_submit(class='btn btn-success btn-xs')}}
                         {%if form.task_id.errors%}{% for e in form.task_id.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
                     </div>
                 </form>
@@ -29,7 +30,6 @@
     </div>
 </div>
 
-
-{{ macros.task_sidebar(user=user) }}
+{{ task_macros.task_sidebar(user=user) }}
 
 {% endblock %}
