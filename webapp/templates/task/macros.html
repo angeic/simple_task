@@ -44,11 +44,13 @@
     <div class ="col-lg-3">
         <div class = "row">
             <h2>{{user.username}}</h2>
-            {{user.bio}}
-        </div>
 
+        </div>
+        <div class = "row">
+            {%if user.bio%}{{user.bio}}{%endif%}
+        </div>
         <div class="row">
-            创建了{{ user.count_all()| length }}个任务，完成了{{ user.count_done()|length }}个任务
+            {{user.count_task()}}
         </div>
     </div>
 {% endmacro %}

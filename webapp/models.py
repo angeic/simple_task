@@ -39,11 +39,8 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def count_all(self):
-        return Task.query.filter_by(user_id=self.id).all()
-
-    def count_done(self):
-        return Task.query.filter_by(user_id=self.id).filter_by(status=1).all()
+    def count_task(self):
+        return '创建了{}个任务，完成了{}个'.format(len(self.tasks.all()), len(self.tasks.filter_by(status=1).all()))
 
 
 class Task(db.Model):

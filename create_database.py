@@ -6,7 +6,6 @@ from flask_login import UserMixin
 import time
 db = SQLAlchemy(app)
 
-
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(20), unique=True)
@@ -39,11 +38,8 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def count_all(self):
-        return Task.query.filter_by(user_id=self.id).all()
-
-    def count_done(self):
-        return Task.query.filter_by(user_id=self.id).filter_by(status=1).all()
+    def count_task(self):
+        return '创建了{}个任务，完成了{}个'.format(len(self.tasks.all()), len(self.tasks.filter_by(status=1).all()))
 
 
 class Task(db.Model):
@@ -121,12 +117,30 @@ class Follow(db.Model):
     def __repr__(self):
         return '<Follow {},is_friend:{}>'.format(self.follow_id, self.is_friend)
 
-    def check_follow(self,follow_id):
+    def __init__(self, user_id):
+        self.user_id = user_id
+
+    def check_follow(self, follow_id):
         return Follow.query.filter(Follow.user_id == self.user_id, Follow.follow_id == follow_id).first()
 
     def check_friend(self, follow_id):
-        return Follow.query.filter(Follow.user_id == follow_id,Follow.follow_id == self.user_id).first()
+        return Follow.query.filter(Follow.user_id == follow_id, Follow.follow_id == self.user_id).first()
 
     def set_follow(self, follow_id):
         self.follow_id = follow_id
+        if self.check_friend(follow_id):
+            self.is_friend = 1
+            Follow.query.filter(Follow.user_id == follow_id, Follow.follow_id == self.user_id).update({
+                'is_friend': 1
+            })
+            db.session.commit()
 
+    def cancel_follow(self, follow_id):
+        if self.check_friend(follow_id):
+            Follow.query.filter(Follow.user_id == follow_id, Follow.follow_id == self.user_id).update({
+                'is_friend': 0
+            })
+            #db.session.commit()
+        cancel = Follow.query.filter(Follow.user_id == self.user_id, Follow.follow_id == follow_id).first()
+        db.session.delete(cancel)
+        #db.session.commit()
