@@ -6,6 +6,7 @@ from flask_login import UserMixin
 import time
 db = SQLAlchemy(app)
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(20), unique=True)
@@ -20,7 +21,7 @@ class User(db.Model, UserMixin):
         lazy='dynamic'
     )
 
-    follow_list = db.relationship(
+    following = db.relationship(
         'Follow',
         backref='user',
         lazy='dynamic'

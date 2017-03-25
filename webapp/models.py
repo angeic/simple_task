@@ -21,7 +21,7 @@ class User(db.Model, UserMixin):
         lazy='dynamic'
     )
 
-    follow_list = db.relationship(
+    following = db.relationship(
         'Follow',
         backref='user',
         lazy='dynamic'
