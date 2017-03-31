@@ -6,7 +6,7 @@ from flask_login import login_user, logout_user,login_required, current_user
 from webapp.extensions import login_manager
 from .controllers.task import task_blueprint
 from .controllers.people import people_blueprint
-
+from .controllers.weibo import weibo_blueprint
 
 def create_app(object_name):
     app = Flask(__name__)
@@ -16,6 +16,7 @@ def create_app(object_name):
 
     app.register_blueprint(task_blueprint, url_prefix='/task')
     app.register_blueprint(people_blueprint, url_prefix='/people')
+    app.register_blueprint(weibo_blueprint, url_prefix='/wb')
 
     @app.route('/', methods=['POST', 'GET'])
     def index():

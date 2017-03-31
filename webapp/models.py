@@ -3,7 +3,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 from datetime import datetime
-from flask import flash,session
+from flask import flash, session
 db = SQLAlchemy()
 
 
@@ -15,6 +15,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255))
     reg_date = db.Column(db.TIMESTAMP(), server_default=func.now())
     last_login_date = db.Column(db.DateTime())
+    wb_uid = db.Column(db.String(20))
     tasks = db.relationship(
         'Task',
         backref='user',
@@ -26,7 +27,6 @@ class User(db.Model, UserMixin):
         backref='user',
         lazy='dynamic'
     )
-
     def __init__(self, username):
         self.username = username
 
@@ -41,6 +41,10 @@ class User(db.Model, UserMixin):
 
     def count_task(self):
         return '创建了{}个任务，完成了{}个'.format(len(self.tasks.all()), len(self.tasks.filter_by(status=1).all()))
+
+    def wb_reg(self, wb_uid):
+        if not User.query.filter_by(wb_uid=wb_uid).first():
+            self.wb_uid = wb_uid
 
 
 class Task(db.Model):
