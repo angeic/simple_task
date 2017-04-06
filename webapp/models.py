@@ -1,10 +1,16 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from sqlalchemy.sql import func
 from datetime import datetime
 from flask import flash, session
 db = SQLAlchemy()
+
+
+follows = db.Table('follows',
+                   db.Column('user_id', db.ForeignKey('user.id')),
+                   db.Column('follow_id', db.ForeignKey('user.id'))
+                   )
 
 
 class User(db.Model, UserMixin):
@@ -23,10 +29,38 @@ class User(db.Model, UserMixin):
     )
 
     following = db.relationship(
-        'Follow',
-        backref='user',
+        'User',
+        secondary=follows,
+        primaryjoin=(follows.c.user_id == id),
+        secondaryjoin=(follows.c.follow_id == id),
+        backref=db.backref('follower', lazy='dynamic'),
         lazy='dynamic'
     )
+
+    # 检查是否关注了这个人
+    def check_following(self, user_id):
+        if User.query.get(user_id) in self.following.all():
+            return True
+        else:
+            return False
+
+    # 检查是否被这个人关注
+    def check_follower(self, user_id):
+        if User.query.get(user_id) in self.follower.all():
+            return True
+        else:
+            return False
+
+    def add_following(self, user_id):
+        self.following.append(User.query.get_or_404(user_id))
+        db.session.add(self)
+        db.session.commit()
+
+    def cancel_following(self, user_id):
+        self.following.remove(User.query.get_or_404(user_id))
+        db.session.add(self)
+        db.session.commit()
+
     def __init__(self, username):
         self.username = username
 
@@ -46,6 +80,14 @@ class User(db.Model, UserMixin):
         if not User.query.filter_by(wb_uid=wb_uid).first():
             self.wb_uid = wb_uid
 
+    def my_follows(self):
+        following = self.following.all()
+        follower = self.follower.all()
+
+    def other_follows(self):
+        hehe = list(set(current_user.following.all()) & set(self.follower.all()))
+        return "<用户：{}，关注了{}，被{}关注，我关注的人中{}也关注了他>".format(self.username, self.following.all(), self.follower.all(), hehe)
+
 
 class Task(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -56,10 +98,10 @@ class Task(db.Model):
     update_time = db.Column(db.DateTime(), onupdate=func.now())
     done_time = db.Column(db.DateTime())
     deadline = db.Column(db.DateTime(), nullable=False)
-    status = db.Column(db.SmallInteger(), default=0)  # 0：进行中 1：已完成 2：暂停
-    public_level = db.Column(db.SmallInteger(), default=0)  # 1：仅自己可见   2：互相关注的好友可见   3：所有人可见
-    overtime = db.Column(db.SmallInteger(), default=0)  # 任务结束后： 0：未超时 1：超时
-    comment_allowed = db.Column(db.SmallInteger(), default=1)  # 0：禁止评论并隐藏所有评论内容 1：允许评论
+    status = db.Column(db.Boolean, default=0)  # 0：进行中 1：已完成 2：暂停 9：删除
+    public_level = db.Column(db.SmallInteger(), default=0)  # 1：仅自己可见   2：我关注的人可见   3：所有人可见
+    overtime = db.Column(db.Boolean, default=0)  # 任务结束后： 0：未超时 1：超时
+    comment_allowed = db.Column(db.Boolean, default=1)  # 0：禁止评论并隐藏所有评论内容 1：允许评论
     comments = db.relationship(
         'Comment',
         backref='task',
@@ -73,7 +115,11 @@ class Task(db.Model):
         return '<Task: {}|User:{}>'.format(self.title, self.user_id)
 
     def is_overtime(self):
-        if self.status == 0 and self.deadline < datetime.now() or self.overtime == 1:
+        if self.status == 0 and self.deadline > datetime.now():
+            return False
+        elif self.status == 1 and self.overtime == 0:
+            return False
+        else:
             return True
 
     def over_time(self):
@@ -111,41 +157,3 @@ class Comment(db.Model):
 
     def __repr__(self):
         return '<Comment: {}>'.format(self.text[:15])
-
-
-class Follow(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False, index=True)
-    follow_id = db.Column(db.Integer(), nullable=False)
-    is_friend = db.Column(db.SmallInteger(), default=0, index=True)  # 0：非互相关注 1：互相关注
-
-    def __repr__(self):
-        return '<Follow {},is_friend:{}>'.format(self.follow_id, self.is_friend)
-
-    def __init__(self, user_id):
-        self.user_id = user_id
-
-    def check_follow(self, follow_id):
-        return Follow.query.filter(Follow.user_id == self.user_id, Follow.follow_id == follow_id).first()
-
-    def check_friend(self, follow_id):
-        return Follow.query.filter(Follow.user_id == follow_id, Follow.follow_id == self.user_id).first()
-
-    def set_follow(self, follow_id):
-        self.follow_id = follow_id
-        if self.check_friend(follow_id):
-            self.is_friend = 1
-            Follow.query.filter(Follow.user_id == follow_id, Follow.follow_id == self.user_id).update({
-                'is_friend': 1
-            })
-            db.session.commit()
-
-    def cancel_follow(self, follow_id):
-        if self.check_friend(follow_id):
-            Follow.query.filter(Follow.user_id == follow_id, Follow.follow_id == self.user_id).update({
-                'is_friend': 0
-            })
-            #db.session.commit()
-        cancel = Follow.query.filter(Follow.user_id == self.user_id, Follow.follow_id == follow_id).first()
-        db.session.delete(cancel)
-        #db.session.commit()

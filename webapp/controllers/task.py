@@ -1,7 +1,7 @@
-from flask import Blueprint, url_for, redirect, render_template, flash, session, g, abort
+from flask import Blueprint, url_for, redirect, render_template, flash, session, g, abort, request
 from webapp.models import User, Task, db, Comment
-from webapp.form import TaskForm, EditForm, DoneForm, CommentForm
-from flask_login import login_required
+from webapp.form import TaskForm, EditForm, CommentForm
+from flask_login import login_required, current_user
 from datetime import datetime
 
 task_blueprint = Blueprint(
@@ -10,63 +10,37 @@ task_blueprint = Blueprint(
 )
 
 
-@task_blueprint.before_request
-def check_user():
-    if 'user_id' in session:
-        g.current_user = User.query.filter_by(id=int(session['user_id'])).one()
-    else:
-        g.current_user = None
-
-
 @task_blueprint.route('/', methods=['POST', 'GET'])
 @login_required
 def main():
-    user = User.query.filter_by(id=session['user_id']).first()
-    tasks = Task.query.filter_by(user_id=user.id).filter(Task.status != 1).order_by(Task.deadline.asc(), Task.create_time.asc()).all()
-    form = DoneForm()
-    if form.validate_on_submit():
-        task = Task.query.filter_by(id=form.task_id.data).first()
-        if session['user_id'] == str(task.user_id):
-            Task.query.filter_by(id=form.task_id.data).update({
-                'status': 1,
-                'done_time': datetime.now(),
-                'overtime': task.is_overtime()
-            })
-            db.session.commit()
-            flash('任务成功完成！', category='info')
-            return redirect(url_for('task.main'))
-        else:
-            flash('操作异常，请重新操作', category='warning')
+    tasks = Task.query.filter(Task.user_id == current_user.id, Task.status != 1, Task.status != 9).order_by(Task.deadline.asc(), Task.create_time.asc()).all()
     return render_template('task/task.html',
                            page_title='任务列表',
                            tasks=tasks,
-                           user=user,
-                           form=form,
+                           user=current_user,
                            )
 
 
 @task_blueprint.route('/done')
 @login_required
 def done():
-    user = User.query.filter_by(id=session['user_id']).first()
-    tasks = Task.query.filter_by(user_id=user.id).filter_by(status=1).order_by(Task.deadline.asc(), Task.create_time.asc()).all()
+    tasks = Task.query.filter(Task.user_id == current_user.id, Task.status == 1).order_by(Task.deadline.asc(), Task.create_time.asc()).all()
     return render_template('task/task.html',
                            page_title='已完成',
                            tasks=tasks,
-                           user=user,
+                           user=current_user,
                            )
 
 
 @task_blueprint.route('/add', methods=['POST', 'GET'])
 @login_required
 def add():
-    user = User.query.filter_by(id=session['user_id']).first()
     form = TaskForm()
     if form.validate_on_submit():
         task = Task(form.title.data)
         task.text = form.text.data
         task.deadline = form.deadline.data
-        task.user_id = user.id
+        task.user_id = current_user.id
         task.public_level = form.public_level.data
         db.session.add(task)
         db.session.commit()
@@ -74,7 +48,7 @@ def add():
         return redirect(url_for('task.main'))
     return render_template('task/task_new.html',
                            form=form,
-                           user=user,
+                           user=current_user,
                            page_title='创建任务',
                            now=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                            )
@@ -84,9 +58,10 @@ def add():
 @login_required
 def edit(task_id):
     task = Task.query.get_or_404(task_id)
-    if g.current_user != task.user:
+    if task.status == 9:
+        abort(404)
+    if current_user != task.user:
         abort(403)
-    user = User.query.filter_by(id=session['user_id']).first()
 
     form = EditForm()
     if form.validate_on_submit():
@@ -119,7 +94,7 @@ def edit(task_id):
     return render_template('task/task_edit.html',
                            form=form,
                            task=task,
-                           user=user
+                           user=current_user
                            )
 
 
@@ -127,35 +102,60 @@ def edit(task_id):
 @login_required
 def page(task_id):
     task = Task.query.get_or_404(task_id)
-    if g.current_user != task.user:
+    if task.status == 9:
+        abort(404)
+    if current_user != task.user:
         abort(403)
-    user = User.query.filter_by(id=session['user_id']).first()
     comment_form = CommentForm()
-    done_form = DoneForm()
     comments = Comment.query.filter_by(task_id=task.id).order_by(Comment.date).all()
-    if done_form.validate_on_submit():
-        if session['user_id'] == str(task.user_id):
-            Task.query.filter_by(id=task.id).update({
-                'status': 1,
-                'done_time': datetime.now(),
-                'overtime': task.is_overtime()
-            })
-            db.session.commit()
-            flash('任务成功完成！', category='info')
-            return redirect(url_for('task.page', task_id=task.id))
     if comment_form.validate_on_submit():
         new_comment = Comment()
         new_comment.text = comment_form.text.data
         new_comment.task_id = task.id
-        new_comment.user_id = user.id
+        new_comment.user_id = current_user.id
         db.session.add(new_comment)
         db.session.commit()
         flash('评论提交成功', category='info')
         return redirect(url_for('task.page', task_id=task.id))
     return render_template('task/task_page.html',
                            task=task,
-                           user=user,
+                           user=current_user,
                            comments=comments,
-                           comment_form=comment_form,
-                           done_form=done_form
+                           comment_form=comment_form
                            )
+
+
+@task_blueprint.route('/do')
+@login_required
+def do():
+    task_id = request.args.get('id')
+    task = Task.query.get_or_404(task_id)
+
+    if current_user.id == task.user_id:
+
+        comment_switch = request.args.get('comment')
+        if comment_switch in ['0', '1']:
+            Task.query.filter_by(id=task_id).update({
+                'comment_allowed': comment_switch
+            })
+
+        task_delete = request.args.get('delete')
+        if task_delete:
+            Task.query.filter_by(id=task_id).update({
+                'status': 9
+            })
+
+        task_done = request.args.get('done')
+        if task_done and task.status != 9:
+            Task.query.filter_by(id=task_id).update({
+                'status': 1,
+                'overtime': task.is_overtime(),
+                'done_time': datetime.now()
+            })
+
+        db.session.add(task)
+        db.session.commit()
+        return 'hello'
+
+    else:
+        abort(403)

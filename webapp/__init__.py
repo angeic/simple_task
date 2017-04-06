@@ -2,11 +2,12 @@ from flask import Flask, redirect, url_for, render_template, session, flash, g, 
 from webapp.config import DevConfig
 from .models import db, User, Task
 from .form import LoginForm, RegisterForm
-from flask_login import login_user, logout_user,login_required, current_user
+from flask_login import login_user, logout_user, login_required, current_user
 from webapp.extensions import login_manager
 from .controllers.task import task_blueprint
 from .controllers.people import people_blueprint
 from .controllers.weibo import weibo_blueprint
+
 
 def create_app(object_name):
     app = Flask(__name__)

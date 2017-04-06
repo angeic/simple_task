@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, PasswordField, SubmitField, TextAreaField, DateTimeField, RadioField, IntegerField
 from wtforms.validators import DataRequired, Email, length, EqualTo, Optional
-from .models import User, db, Task, Follow
+from .models import User, db, Task
 from flask import session, g, flash
 from datetime import datetime
 
@@ -102,56 +102,8 @@ class EditForm(FlaskForm):
     submit = SubmitField('修改')
 
 
-class DoneForm(FlaskForm):
-    task_id = IntegerField('任务ID', validators=[DataRequired()])
-    done_submit = SubmitField('确认完成')
-
-    def validate(self):
-        check_validate = super(DoneForm, self).validate()
-
-        if not check_validate:
-            return False
-
-        task = Task.query.get_or_404(self.task_id.data)
-
-        if not task or task.status != 0:
-            self.task_id.errors.append(
-                '操作有误，请刷新页面后重新操作'
-            )
-            return False
-
-        return True
-
-
 class CommentForm(FlaskForm):
     text = TextAreaField('评论内容', validators=[DataRequired('未填写内容'), length(max=1000, message='长度不能超过1000')])
     submit = SubmitField('提交')
 
 
-class FollowForm(FlaskForm):
-    follow_id = IntegerField('被关注人ID', validators=[DataRequired()])
-    follow_submit = SubmitField('提交')
-
-    def validate(self):
-        check_validate = super(FollowForm, self).validate()
-
-        if not check_validate:
-            return False
-
-        if self.follow_id.data == g.current_user.id:
-            self.follow_id.errors.append(
-                '不要关注自己'
-            )
-            return False
-        return True
-
-    def cancl_follow(self):
-        follow = Follow.query.filter(Follow.user_id == g.current_user.id, Follow.follow_id == self.follow_id.data).first()
-        if follow.is_friend == 1:
-            Follow.query.filter(Follow.user_id == self.follow_id.data, Follow.follow_id == g.current_user.id).update({
-                'is_friend': 0
-            })
-            db.session.commit()
-        follow = Follow.query.filter(Follow.user_id == g.current_user.id, Follow.follow_id == self.follow_id.data).first()
-        db.session.delete(follow)
-        db.session.commit()

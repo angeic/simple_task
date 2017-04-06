@@ -1,6 +1,5 @@
 from flask import Blueprint, url_for, redirect, render_template, flash, session, request, g
-from webapp.models import User, Task, Follow, db
-from webapp.form import LoginForm, RegisterForm, FollowForm
+from webapp.models import User, Task, db
 from flask_login import logout_user, login_user, login_required, current_user
 import requests
 import json
@@ -38,9 +37,12 @@ def callback():
             session['wb_uid'] = token_data['uid']
             session['wb_access_token'] = token_data['access_token']
             user = User.query.filter_by(wb_uid=token_data['uid']).first()
+
+            # 该用户已注册
             if user:
                 login_user(user, remember=True)
                 return redirect(url_for('task.main'))
+            # 该用户未注册
             else:
                 get_wbuser = wbsession.get('https://api.weibo.com/2/users/show.json?access_token={}&uid={}'.format(token_data['access_token'], token_data['uid']))
                 wbuser_info = json.loads(get_wbuser.text)
@@ -51,7 +53,7 @@ def callback():
                 db.session.commit()
                 user = User.query.filter_by(wb_uid=token_data['uid']).first()
                 login_user(user, remember=True)
-                flash('欢迎微博用户{}'.format(wbuser_info['screen_name']))
+                flash('欢迎微博用户{}'.format(wbuser_info['screen_name']), category='info')
                 return redirect(url_for('task.main'))
         else:
             return '<验证失败>'

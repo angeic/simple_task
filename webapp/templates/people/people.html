@@ -4,14 +4,26 @@
 {% block body %}
 
 当前页面用户{{display_user.username}}
-当前登录用户{{g.current_user}}
+当前登录用户{{current_user}}
 是否关注{{is_follow}}
-<form method="post" >{{form.hidden_tag()}}
-    <div class="form-groups">
-    {%if is_follow %}{{form.follow_submit(class='btn btn-default btn-xs',value='取消关注')}}{% if form.follow_id.errors %}{% for e in form.follow_id.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-        {%else%}{{form.follow_submit(class='btn btn-success btn-xs',value='关注')}}{% if form.follow_id.errors %}{% for e in form.follow_id.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-        {%endif%}
-    </div>
-</form>
+
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $("button").click(function(){
+    $.get("{{url_for('people.follow',id=display_user.id)}}");
+    parent.location.reload()
+  });
+
+});
+</script>
+{% if is_follow %}
+<button class='btn btn-default btn-xs'>取消关注</button>
+{%else%}
+<button class='btn btn-primary btn-xs'>关注</button>
+{%endif%}
+
+{{display_user.other_follows()}}
 
 {% endblock %}
