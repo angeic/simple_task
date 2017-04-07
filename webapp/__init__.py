@@ -7,6 +7,7 @@ from webapp.extensions import login_manager
 from .controllers.task import task_blueprint
 from .controllers.people import people_blueprint
 from .controllers.weibo import weibo_blueprint
+from .controllers.login import login_blueprint
 
 
 def create_app(object_name):
@@ -18,29 +19,16 @@ def create_app(object_name):
     app.register_blueprint(task_blueprint, url_prefix='/task')
     app.register_blueprint(people_blueprint, url_prefix='/people')
     app.register_blueprint(weibo_blueprint, url_prefix='/wb')
+    app.register_blueprint(login_blueprint,url_prefix='/login')
 
-    @app.route('/', methods=['POST', 'GET'])
-    def index():
-        if 'user_id' in session:
-            return redirect(url_for('task.main'))
-        action = request.args.get('action')
-        login_form = LoginForm()
-        register_form = RegisterForm()
-        if register_form.validate_on_submit():
-            flash('注册成功，请登录', category='success')
-            return redirect(url_for('index'))
-        if login_form.validate_on_submit():
-            user = User.query.filter_by(username=login_form.username.data).first()
-            login_user(user, remember=login_form.remember.data)
-            flash('欢迎回来，{}'.format(user.username), category='success')
-            g.user = user
-            return redirect(url_for('task.main'))
-        return render_template('index.html', login_form=login_form, register_form=register_form,action=action)
+    @app.route('/')
+    def home():
+        return redirect(url_for('task.main'))
 
     @app.route('/logout')
     def logout():
         logout_user()
-        return redirect(url_for('index'))
+        return redirect(url_for('login.index'))
 
     @app.errorhandler(404)
     def page_not_found(error):

@@ -1,6 +1,6 @@
-from flask import Blueprint, url_for, redirect, render_template, flash, session, request
-from webapp.models import User, Task, db
-from flask_login import logout_user, login_user, login_required, current_user
+from flask import Blueprint, render_template, request
+from webapp.models import User
+from flask_login import login_required, current_user
 
 
 people_blueprint = Blueprint(
@@ -13,17 +13,14 @@ people_blueprint = Blueprint(
 @login_required
 def people(username):
     display_user = User.query.filter_by(username=username).first()
-    is_follow = current_user.check_following(display_user.id)
-
     return render_template('people/people.html',
-                           display_user=display_user,
-                           is_follow=is_follow
+                           display_user=display_user
                            )
 
 
-@people_blueprint.route('/follow')
+@people_blueprint.route('/do')
 @login_required
-def follow():
+def do():
     follow_id = request.args.get('id')
     if int(follow_id) != current_user.id:
         if current_user.check_following(follow_id):

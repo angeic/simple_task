@@ -52,5 +52,8 @@
         <div class="row">
             {{user.count_task()}}
         </div>
+        <div class="row">
+            关注了{{user.following.all()|length}}，关注者{{user.follower.all()|length}}
+        </div>
     </div>
 {% endmacro %}

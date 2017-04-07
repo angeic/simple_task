@@ -36,7 +36,7 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     username = StringField('账号', validators=[DataRequired('必须填写账号'), length(max=20, message='长度不可以超过20')])
-    email = StringField('Email',validators=[DataRequired('必须填写Email'), length(max=50, message='长度不能超过50'), Email(message='Email格式不正确')])
+    email = StringField('Email', validators=[DataRequired('必须填写Email'), length(max=50, message='长度不能超过50'), Email(message='Email格式不正确')])
     password = PasswordField('密码', validators=[DataRequired(), length(8, 30, '密码长度必须在8-30位'), EqualTo('password_verify', '两次输入的密码不一致')])
     password_verify = PasswordField('确认密码', validators=[DataRequired(), length(8, 30, '密码长度必须在8-30位')])
     register_submit = SubmitField('注册')

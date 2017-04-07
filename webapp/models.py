@@ -80,13 +80,8 @@ class User(db.Model, UserMixin):
         if not User.query.filter_by(wb_uid=wb_uid).first():
             self.wb_uid = wb_uid
 
-    def my_follows(self):
-        following = self.following.all()
-        follower = self.follower.all()
-
-    def other_follows(self):
-        hehe = list(set(current_user.following.all()) & set(self.follower.all()))
-        return "<用户：{}，关注了{}，被{}关注，我关注的人中{}也关注了他>".format(self.username, self.following.all(), self.follower.all(), hehe)
+    def relation_follows(self):
+        return list(set(current_user.following.all()) & set(self.follower.all()))
 
 
 class Task(db.Model):

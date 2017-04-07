@@ -1,5 +1,5 @@
 from flask import Blueprint, url_for, redirect, render_template, flash, session, g, abort, request
-from webapp.models import User, Task, db, Comment
+from webapp.models import Task, db, Comment
 from webapp.form import TaskForm, EditForm, CommentForm
 from flask_login import login_required, current_user
 from datetime import datetime
@@ -17,7 +17,6 @@ def main():
     return render_template('task/task.html',
                            page_title='任务列表',
                            tasks=tasks,
-                           user=current_user,
                            )
 
 
@@ -27,8 +26,7 @@ def done():
     tasks = Task.query.filter(Task.user_id == current_user.id, Task.status == 1).order_by(Task.deadline.asc(), Task.create_time.asc()).all()
     return render_template('task/task.html',
                            page_title='已完成',
-                           tasks=tasks,
-                           user=current_user,
+                           tasks=tasks
                            )
 
 
@@ -48,7 +46,6 @@ def add():
         return redirect(url_for('task.main'))
     return render_template('task/task_new.html',
                            form=form,
-                           user=current_user,
                            page_title='创建任务',
                            now=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                            )
@@ -93,8 +90,7 @@ def edit(task_id):
     form.comment_allowed.data = task.comment_allowed
     return render_template('task/task_edit.html',
                            form=form,
-                           task=task,
-                           user=current_user
+                           task=task
                            )
 
 
@@ -119,7 +115,6 @@ def page(task_id):
         return redirect(url_for('task.page', task_id=task.id))
     return render_template('task/task_page.html',
                            task=task,
-                           user=current_user,
                            comments=comments,
                            comment_form=comment_form
                            )
