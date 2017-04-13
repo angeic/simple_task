@@ -10,6 +10,32 @@
 当前登录用户{{current_user}}
 是否关注{{current_user.check_following(display_user.id)}}
 
+        {% for task in display_user.tasks.all() %}
+        <div class="col-lg-9">
+            <div class = "row">
+                <h3><a href="{{url_for('task.page',task_id=task.id)}}">{{ task.title }}</a></h3>
+                <small>计划完成时间：{{task.deadline}} {% if task.done_time %}| 完成时间：{{task.done_time}}{%endif%}
+                    {% if task.is_overtime() %} | {{task.over_time() }}{%endif%}</small>
+
+                <p>{{ task.text }}</p>
+
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class = "row">
+                <small>
+                    {% if task.check_liked() %}
+                        <input type="button" class="btn btn-primary btn-xs like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
+                    {% else %}
+                        <input type="button" class="btn btn-default btn-xs like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
+                    {% endif %}
+
+                    {%if not task.comment_allowed%}评论已关闭{%else%}{{ task.comments.all() | length }}个评论{%endif%}
+                </small>
+            </div>
+        </div>
+        {% endfor %}
+
 
     </div>
 </div>

@@ -1,33 +1,25 @@
 {% macro people_sidebar(user,current_user) %}
-<script type="text/javascript">
-$(document).ready(function(){
-  $("button").click(function(){
-    $.get("{{url_for('people.do',id=user.id)}}");
-    parent.location.reload()
-  });
-
-});
-</script>
-
 
     <div class ="col-lg-3">
         <div class = "row">
             <h2>{{user.username}}</h2>
             {% if current_user.check_following(user.id) %}
-            <button class='btn btn-default btn-xs'>取消关注</button>
+            <input type="button" class='btn btn-default btn-xs followbtn' value="取消关注" follow_id={{user.id}}>
             {%else%}
-            <button class='btn btn-primary btn-xs'>关注</button>
+            <input type="button" class='btn btn-primary btn-xs followbtn' value="关注" follow_id={{user.id}}>
             {%endif%}
+
         </div>
         <div class = "row">
             {%if user.bio%}{{user.bio}}{%endif%}
         </div>
         <div class="row">
-            {{user.count_task()}}
+            {{user.count_task()}} <br />
+            获得了{{user.liked.all() | length}}个赞
         </div>
         <div class="row">
             关注了{{user.following.all()| length}}，关注者{{user.follower.all()|length}}<br />
-            {%if user.relation_follows() %}我关注的{%for the_people in user.relation_follows()%}{{the_people.username}}{%endfor%} 也关注了他{% endif %}
+            {%if user.relation() %}我关注的{%for the_people in user.relation()%}{{the_people.username}}{%endfor%} 也关注了他{% endif %}
 
         </div>
     </div>

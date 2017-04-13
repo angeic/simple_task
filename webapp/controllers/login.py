@@ -1,7 +1,7 @@
 from flask import Blueprint, url_for, redirect, render_template, flash, session, request
 from webapp.models import User
 from flask_login import login_user
-from webapp.form import LoginForm,RegisterForm
+from webapp.form import LoginForm, RegisterForm
 
 login_blueprint = Blueprint(
     'login',
@@ -18,7 +18,7 @@ def index():
     register_form = RegisterForm()
     if register_form.validate_on_submit():
         flash('注册成功，请登录', category='success')
-        return redirect(url_for('index'))
+        return redirect(url_for('login.index'))
     if login_form.validate_on_submit():
         user = User.query.filter_by(username=login_form.username.data).first()
         login_user(user, remember=login_form.remember.data)

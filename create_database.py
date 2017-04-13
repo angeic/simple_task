@@ -2,9 +2,12 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from manage import app
 from sqlalchemy.sql import func
-from flask_login import UserMixin
-import time
+from flask_login import UserMixin, current_user
+import datetime
+from flask import session
+
 db = SQLAlchemy(app)
+
 
 
 follows = db.Table('follows',
@@ -34,6 +37,12 @@ class User(db.Model, UserMixin):
         primaryjoin=(follows.c.user_id == id),
         secondaryjoin=(follows.c.follow_id == id),
         backref=db.backref('follower', lazy='dynamic'),
+        lazy='dynamic'
+    )
+
+    liked = db.relationship(
+        'Likes',
+        backref='user',
         lazy='dynamic'
     )
 
@@ -80,13 +89,8 @@ class User(db.Model, UserMixin):
         if not User.query.filter_by(wb_uid=wb_uid).first():
             self.wb_uid = wb_uid
 
-    def my_follows(self):
-        following = self.following.all()
-        follower = self.follower.all()
-
-    def other_follows(self):
-        hehe = list(set(current_user.following.all()) & set(self.follower.all()))
-        return "<用户：{}，关注了{}，被{}关注，我关注的人中{}也关注了他>".format(self.username, self.following.all(), self.follower.all(), hehe)
+    def relation(self):
+        return list(set(current_user.following.all()) & set(self.follower.all()))
 
 
 class Task(db.Model):
@@ -98,12 +102,18 @@ class Task(db.Model):
     update_time = db.Column(db.DateTime(), onupdate=func.now())
     done_time = db.Column(db.DateTime())
     deadline = db.Column(db.DateTime(), nullable=False)
-    status = db.Column(db.Boolean, default=0)  # 0：进行中 1：已完成 2：暂停 9：删除
-    public_level = db.Column(db.SmallInteger(), default=0)  # 1：仅自己可见   2：我关注的人可见   3：所有人可见
+    status = db.Column(db.SmallInteger(), default=0)  # 0：进行中 1：已完成 2：暂停 9：删除
+    public_level = db.Column(db.SmallInteger(), default=3)  # 1：仅自己可见   2：我关注的人可见   3：所有人可见
     overtime = db.Column(db.Boolean, default=0)  # 任务结束后： 0：未超时 1：超时
     comment_allowed = db.Column(db.Boolean, default=1)  # 0：禁止评论并隐藏所有评论内容 1：允许评论
     comments = db.relationship(
         'Comment',
+        backref='task',
+        lazy='dynamic'
+    )
+
+    liked = db.relationship(
+        'Likes',
         backref='task',
         lazy='dynamic'
     )
@@ -122,6 +132,7 @@ class Task(db.Model):
         else:
             return True
 
+    # 超时情况
     def over_time(self):
         if self.status == 0 and self.deadline < datetime.now():
             over_time = datetime.now() - self.deadline
@@ -140,8 +151,10 @@ class Task(db.Model):
             else:
                 return ''.join(['超时', str(int(over_time.total_seconds() / 86400)), '天完成'])
 
-    def count_comments(self):
-        return Comment.query.filter_by(task_id=self.id).all()
+    def check_liked(self):
+        for uid in self.liked.all():
+            if str(uid) == session['user_id']:
+                return True
 
 
 class Comment(db.Model):
@@ -157,3 +170,20 @@ class Comment(db.Model):
 
     def __repr__(self):
         return '<Comment: {}>'.format(self.text[:15])
+
+
+class Likes(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), nullable=False)
+    task_id = db.Column(db.Integer(), db.ForeignKey('task.id'), index=True, nullable=False)
+    liked_user = db.Column(db.Integer(), db.ForeignKey('user.id'), index=True, nullable=False)
+
+    def i_like(self, task_id):
+        task = Task.query.get(task_id)
+        if session['user_id'] != str(task.user_id):
+            self.user_id = session['user_id']
+            self.task_id = task.id
+            self.liked_user = task.user_id
+
+    def __repr__(self):
+        return '{}'.format(self.user_id)

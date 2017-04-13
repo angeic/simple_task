@@ -120,6 +120,7 @@ def page(task_id):
                            )
 
 
+
 @task_blueprint.route('/do')
 @login_required
 def do():
@@ -131,24 +132,21 @@ def do():
         comment_switch = request.args.get('comment')
         if comment_switch in ['0', '1']:
             Task.query.filter_by(id=task_id).update({
-                'comment_allowed': comment_switch
+                'comment_allowed': int(comment_switch)
             })
 
         task_delete = request.args.get('delete')
         if task_delete:
-            Task.query.filter_by(id=task_id).update({
-                'status': 9
-            })
+            db.session.delete(task)
 
         task_done = request.args.get('done')
-        if task_done and task.status != 9:
+        if task_done and task.status != 1:
             Task.query.filter_by(id=task_id).update({
                 'status': 1,
                 'overtime': task.is_overtime(),
                 'done_time': datetime.now()
             })
 
-        db.session.add(task)
         db.session.commit()
         return 'hello'
 

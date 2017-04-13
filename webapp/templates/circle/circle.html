@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% import "task/macros.html" as task_macros %}
+{% block title %}{{page_title}} - {{super()}}{% endblock %}
+
+{% block body %}
+
+<div class="col-lg-9">
+    <div class = "row">
+        {{ task_macros.task_navigate() }}
+
+        <ul class="nav navbar-nav">
+            <li {% if request.path == url_for('circle.home') %} class="active" {%else%}{%endif%}><a href="{{url_for('circle.home')}}">动态</a></li>
+            <li {% if request.path == url_for('circle.following') %} class="active" {%else%}{%endif%}><a href="{{url_for('circle.following',)}}">我关注的人</a></li>
+            <li {% if request.path == url_for('circle.follower') %} class="active" {%else%}{%endif%}><a href="{{url_for('circle.follower')}}">关注我的人</a></li>
+            <li {% if request.path == url_for('circle.explore') %} class="active" {%else%}{%endif%}><a href="{{url_for('circle.explore')}}">发现</a></li>
+        </ul>
+        {% for people in people_list %}
+            <div class="col-lg-9">
+                <div class = "row">
+                    <h4><a href="{{url_for('people.people',username=people.username)}}">{{ people.username }}</a></h4>
+                    <p>{{people.bio}}</p>
+                    <p>{{people.tasks.all()|length}}任务  {{people.follower.all()| length}}关注者</p>
+
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+</div>
+
+{{ task_macros.task_sidebar(user=current_user) }}
+
+{% endblock %}

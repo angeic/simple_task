@@ -21,17 +21,17 @@
         <div class="col-lg-9">{# 功能按钮 start #}
             <div class = "row">
                 {% if task.status !=1 %}
-                    <button class="btn btn-success btn-xs">确认完成</button>
+                    <input type="button" class="btn btn-success btn-xs task-done-btn" tid={{task.id}} value="确认完成">
                 {% endif %}
 
                 {% if task.comment_allowed == 1 %}
-                    <button class="btn btn-default btn-xs">关闭评论</button>
+                    <input type="button" class="btn btn-default btn-xs comment_allow_btn" tid={{task.id}} comment_status="0" value="关闭评论">
                 {% else %}
-                    <button class="btn btn-default btn-xs">允许评论</button>
+                    <input type="button" class="btn btn-default btn-xs comment_allow_btn" tid={{task.id}} comment_status="1" value="打开评论">
                 {%endif%}
 
                 {% if task.status == 0 %}
-                    <button class="btn btn-default btn-xs">删除</button>
+                    <input type="button" class="btn btn-default btn-xs task_delete_btn" tid={{task.id}} value="删除">
                 {% endif %}
             </div>
         </div>{# 功能按钮 end #}
@@ -78,6 +78,6 @@
 </div>
 
 
-{{ macros.task_sidebar(user=user) }}
+{{ macros.task_sidebar(user=current_user) }}
 
 {% endblock %}

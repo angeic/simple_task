@@ -12,7 +12,7 @@
             <ul class="nav navbar-nav">
                 <li {% if request.path == url_for('task.main') %} class="active" {%else%}{%endif%}><a href="{{url_for('task.main')}}">任务列表</a></li>
                 <li {% if request.path == url_for('task.done') %} class="active" {%else%}{%endif%}><a href="{{url_for('task.done')}}">已完成</a></li>
-                <li {% if request.path == '/' %} class="active" {%else%}{%endif%}><a href="#">朋友圈</a></li>
+                <li {% if request.path == url_for('circle.home') %} class="active" {%else%}{%endif%}><a href="{{url_for('circle.home')}}">朋友圈</a></li>
                 <!--
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -50,10 +50,11 @@
             {%if user.bio%}{{user.bio}}{%endif%}
         </div>
         <div class="row">
-            {{user.count_task()}}
+            创建了{{user.tasks.all()|length}}个任务，个未完成 <br />
+            获得了{{user.liked.all() |length }}个赞
         </div>
         <div class="row">
-            关注了{{user.following.all()|length}}，关注者{{user.follower.all()|length}}
+            关注了<a href="{{url_for('circle.following')}}">{{user.following.all()|length}}</a>，关注者<a href="{{url_for('circle.follower')}}">{{user.follower.all()|length}}</a>
         </div>
     </div>
 {% endmacro %}
