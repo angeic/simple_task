@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, session
-from webapp.models import User, Likes, db, Task
+from flask import Blueprint, render_template, request, session, flash, redirect, url_for
+from webapp.models import User, Likes, db, Task, Comment
 from flask_login import login_required, current_user
-
+from webapp.form import CommentForm
 
 people_blueprint = Blueprint(
     'people',
@@ -15,6 +15,30 @@ def people(username):
     display_user = User.query.filter_by(username=username).first()
     return render_template('people/people.html',
                            display_user=display_user
+                           )
+
+
+@people_blueprint.route('/task/<int:task_id>', methods=['POST', 'GET'])
+@login_required
+def task(task_id):
+    task_it = Task.query.get_or_404(task_id)
+    display_user = User.query.get(task_it.user_id)
+    comment_form = CommentForm()
+    comments = Comment.query.filter_by(task_id=task_it.id).order_by(Comment.date).all()
+    if comment_form.validate_on_submit():
+        new_comment = Comment()
+        new_comment.text = comment_form.text.data
+        new_comment.task_id = task.id
+        new_comment.user_id = current_user.id
+        db.session.add(new_comment)
+        db.session.commit()
+        flash('评论提交成功', category='info')
+        return redirect(url_for('task.page', task_id=task.id))
+    return render_template('people/task.html',
+                           display_user=display_user,
+                           task=task_it,
+                           comment_form=comment_form,
+                           comments=comments
                            )
 
 

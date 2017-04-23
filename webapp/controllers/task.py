@@ -120,7 +120,6 @@ def page(task_id):
                            )
 
 
-
 @task_blueprint.route('/do')
 @login_required
 def do():
