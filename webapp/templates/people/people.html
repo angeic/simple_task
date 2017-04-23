@@ -6,7 +6,7 @@
 <div class="col-lg-9">
     <div class = "row">
 
-        {% for task in display_user.tasks.all() %}
+        {% for task in tasks %}
         <div class="col-lg-9">
             <div class = "row">
                 <h3><a href="{{url_for('people.task',task_id=task.id)}}">{{ task.title }}</a></h3>

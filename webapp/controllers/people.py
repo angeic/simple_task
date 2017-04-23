@@ -13,8 +13,11 @@ people_blueprint = Blueprint(
 @login_required
 def people(username):
     display_user = User.query.filter_by(username=username).first()
+    # 完成时间倒序
+    tasks = Task.query.filter(Task.user_id == display_user.id).order_by(Task.create_time.desc()).all()
     return render_template('people/people.html',
-                           display_user=display_user
+                           display_user=display_user,
+                           tasks=tasks
                            )
 
 

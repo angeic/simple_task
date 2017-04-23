@@ -13,7 +13,8 @@ task_blueprint = Blueprint(
 @task_blueprint.route('/', methods=['POST', 'GET'])
 @login_required
 def main():
-    tasks = Task.query.filter(Task.user_id == current_user.id, Task.status != 1, Task.status != 9).order_by(Task.deadline.asc(), Task.create_time.asc()).all()
+    # 最后期限倒序
+    tasks = Task.query.filter(Task.user_id == current_user.id, Task.status != 1).order_by(Task.deadline.asc(), Task.create_time.asc()).all()
     return render_template('task/task.html',
                            page_title='任务列表',
                            tasks=tasks,
@@ -23,7 +24,8 @@ def main():
 @task_blueprint.route('/done')
 @login_required
 def done():
-    tasks = Task.query.filter(Task.user_id == current_user.id, Task.status == 1).order_by(Task.deadline.asc(), Task.create_time.asc()).all()
+    # 完成时间倒序
+    tasks = Task.query.filter(Task.user_id == current_user.id, Task.status == 1).order_by(Task.create_time.desc()).all()
     return render_template('task/task.html',
                            page_title='已完成',
                            tasks=tasks
