@@ -1,5 +1,5 @@
 from flask import Blueprint, url_for, redirect, render_template, flash, session, g, abort, request
-from webapp.models import Task, db, Comment
+from webapp.models import Task, db, Comment, User
 from webapp.form import TaskForm, EditForm, CommentForm
 from flask_login import login_required, current_user
 from datetime import datetime
@@ -41,8 +41,10 @@ def follower():
 @circle_blueprint.route('/explore')
 @login_required
 def explore():
+    peoples = User.query.filter(User.id != session['user_id']).all()
     tasks = Task.query.filter_by(public_level=3).order_by(Task.create_time.desc()).all()
-    return render_template('circle/home.html',
+    return render_template('circle/explore.html',
                            page_title='发现',
-                           tasks=tasks
+                           tasks=tasks,
+                           peoples=peoples,
                            )

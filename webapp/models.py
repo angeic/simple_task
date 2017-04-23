@@ -82,6 +82,9 @@ class User(db.Model, UserMixin):
     def count_task(self):
         return '创建了{}个任务，完成了{}个'.format(len(self.tasks.all()), len(self.tasks.filter_by(status=1).all()))
 
+    def unfinish_task(self):
+        return len(self.tasks.all()) - len(self.tasks.filter_by(status=1).all())
+
     def wb_reg(self, wb_uid):
         if not User.query.filter_by(wb_uid=wb_uid).first():
             self.wb_uid = wb_uid

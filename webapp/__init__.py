@@ -9,6 +9,7 @@ from .controllers.people import people_blueprint
 from .controllers.weibo import weibo_blueprint
 from .controllers.login import login_blueprint
 from .controllers.circle import circle_blueprint
+from .controllers.errors import error_blueprints
 
 
 def create_app(object_name):
@@ -20,8 +21,9 @@ def create_app(object_name):
     app.register_blueprint(task_blueprint, url_prefix='/task')
     app.register_blueprint(people_blueprint, url_prefix='/people')
     app.register_blueprint(weibo_blueprint, url_prefix='/wb')
-    app.register_blueprint(login_blueprint,url_prefix='/login')
-    app.register_blueprint(circle_blueprint,url_prefix='/circle')
+    app.register_blueprint(login_blueprint, url_prefix='/login')
+    app.register_blueprint(circle_blueprint, url_prefix='/circle')
+    app.register_blueprint(error_blueprints)
 
     @app.route('/')
     def home():
@@ -31,17 +33,5 @@ def create_app(object_name):
     def logout():
         logout_user()
         return redirect(url_for('login.index'))
-
-    @app.errorhandler(404)
-    def page_not_found(error):
-        return render_template('404.html'), 404
-
-    @app.errorhandler(403)
-    def forbidden(error):
-        return render_template('403.html'), 403
-
-    @app.errorhandler(500)
-    def error_500(error):
-        return render_template('500.html'), 500
 
     return app

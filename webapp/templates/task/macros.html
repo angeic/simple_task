@@ -50,7 +50,7 @@
             {%if user.bio%}{{user.bio}}{%endif%}
         </div>
         <div class="row">
-            创建了{{user.tasks.all()|length}}个任务，个未完成 <br />
+            创建了{{user.tasks.all()|length}}个任务，{{user.unfinish_task()}}个未完成 <br />
             获得了{{user.liked.all() |length }}个赞
         </div>
         <div class="row">
