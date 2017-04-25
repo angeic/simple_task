@@ -48,6 +48,8 @@ def task(task_id):
 @people_blueprint.route('/do')
 @login_required
 def do():
+
+    # 关注模块
     follow_id = request.args.get('follow_id')
     if follow_id:
         if int(follow_id) != current_user.id:
@@ -64,7 +66,7 @@ def do():
         if like:
             db.session.delete(like)
             db.session.commit()
-            return 'unlike success'
+            return 'like action success'
         else:
             like = Likes()
             try:
@@ -74,4 +76,4 @@ def do():
             except:
                 return 'like failed'
             else:
-                return 'like success'
+                return 'like action success'

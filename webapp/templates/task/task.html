@@ -26,9 +26,6 @@
                     {% if task.comment_allowed == 1 %}<input type="button" class="btn btn-default btn-xs comment_allow_btn" tid={{task.id}} comment_status="0" value="关闭评论">
                     {% else %}<input type="button" class="btn btn-default btn-xs comment_allow_btn" tid={{task.id}} comment_status="1" value="打开评论">{%endif%}
 
-                    {% if task.status == 0 %}
-                        <input type="button" class="btn btn-default btn-xs task_delete_btn" tid={{task.id}} value="删除">
-                    {% endif %}
                 </div>
                 <div class = "row">
                     <small>
