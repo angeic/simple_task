@@ -60,3 +60,12 @@ $(document).ready(function(){
 
   });
 });
+
+//创建任务
+
+$(document).ready(function(){
+  $(".add-task-btn").click(function(){
+      window.location.href="/task/add"
+
+  });
+});
