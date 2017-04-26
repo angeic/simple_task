@@ -41,7 +41,7 @@ def follower():
 @circle_blueprint.route('/explore')
 @login_required
 def explore():
-    people_list = User.query.filter(User.id != session['user_id']).all()
+    people_list = User.query.filter(User.id != session['user_id']).order_by(User.reg_date.desc()).all()
     tasks = Task.query.filter_by(public_level=3).order_by(Task.create_time.desc()).all()
     return render_template('circle/circle.html',
                            page_title='发现',

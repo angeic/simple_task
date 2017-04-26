@@ -7,7 +7,6 @@
     <div class = "row">
 
         {% for task in tasks %}
-        <div class="col-lg-9">
             <div class = "row">
                 <h3><a href="{{url_for('people.task',task_id=task.id)}}">{{ task.title }}</a></h3>
                 <small>计划完成时间：{{task.deadline}} {% if task.done_time %}| 完成时间：{{task.done_time}}{%endif%}
@@ -16,8 +15,6 @@
                 <p>{{ task.text }}</p>
 
             </div>
-        </div>
-        <div class="col-lg-9">
             <div class = "row">
                 <small>
                     {% if task.check_liked() %}
@@ -29,10 +26,7 @@
                     {%if not task.comment_allowed%}评论已关闭{%else%}{{ task.comments.all() | length }}个评论{%endif%}
                 </small>
             </div>
-        </div>
         {% endfor %}
-
-
     </div>
 </div>
 

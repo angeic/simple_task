@@ -4,73 +4,70 @@
 
 {% block body %}
 <div class="col-lg-9">
-    <div class = "row">
 
 
-        <div class="col-lg-9">
-            <div class = "row">
-                <h3>{{ task.title }} <small><a href="{{url_for('task.edit',task_id=task.id)}}">编辑</a></small></h3>
-                <small>创建于{{task.create_time}}，计划完成时间{{task.deadline}}{% if task.is_overtime() %}，{{task.over_time() }}{%endif%}</small>
-            </div>
+
+
+        <div class = "row">{# 任务头 #}
+            <h3>{{ task.title }} <small><a href="{{url_for('task.edit',task_id=task.id)}}">编辑</a></small></h3>
+            <small>创建于{{task.create_time}}，计划完成时间{{task.deadline}}{% if task.is_overtime() %}，{{task.over_time() }}{%endif%}</small>
         </div>
-        <div class="col-lg-9">
-            <div class = "row">
-                <p>{{ task.text }}</p>
-            </div>
-        </div>
-        <div class="col-lg-9">{# 功能按钮 start #}
-            <div class = "row">
-                {% if task.status !=1 %}
-                    <input type="button" class="btn btn-success btn-xs task-done-btn" tid={{task.id}} value="确认完成">
-                {% endif %}
 
-                {% if task.comment_allowed == 1 %}
-                    <input type="button" class="btn btn-default btn-xs comment_allow_btn" tid={{task.id}} comment_status="0" value="关闭评论">
-                {% else %}
-                    <input type="button" class="btn btn-default btn-xs comment_allow_btn" tid={{task.id}} comment_status="1" value="打开评论">
-                {%endif%}
-            </div>
+
+        <div class = "row">{# 任务内容 #}
+            <p>{{ task.text }}</p>
+        </div>
+
+
+        <div class = "row">{# 功能按钮 start #}
+            {% if task.status !=1 %}
+                <input type="button" class="btn btn-success task-done-btn" tid={{task.id}} value="任务完成">
+            {% endif %}
+
+            {% if task.comment_allowed == 1 %}
+                <input type="button" class="btn btn-default comment_allow_btn" tid={{task.id}} comment_status="0" value="关闭评论">
+            {% else %}
+                <input type="button" class="btn btn-default comment_allow_btn" tid={{task.id}} comment_status="1" value="打开评论">
+            {%endif%}
+
         </div>{# 功能按钮 end #}
 
 
-        <div class="col-lg-9">{# 评论区 start #}
-            <div class = "row">
-                {% if task.comment_allowed %}
-                    <div class="col-lg-9">
-                        <div class = "row">
-                            <form method="post">
-                                {{comment_form.hidden_tag()}}
-                                <div class="row control-group">
-                                    {{comment_form.text.label}}{%if comment_form.text.errors%}{% for e in comment_form.text.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-                                    {{comment_form.text(class='form-control')}}
-                                </div>
-                                <div class="row control-group">
-                                    {{comment_form.submit(class='btn btn-warning btn-xs')}}
-                                </div>
-                            </form>
-                        </div>
-                    </div>
 
-                    <div class="col-lg-9">
-                         <div class = "row">
-                        {% for comment in comments %}
-                            <div class = "row">
-                                {{comment.username()}}在{{comment.date}}说：
-                                <br />{{comment.text}}
-                            </div>
-                        {% endfor %}
-                         </div>
-                    </div>
-                {% else %}
-                    <div class="col-lg-9">
-                        <div class = "row">
-                            <p>评论已关闭</p>
+
+            {% if task.comment_allowed %} {# 评论区 start #}
+
+                <div class = "row">
+                    <form method="post">
+                        {{comment_form.hidden_tag()}}
+                        <div class="form-group">
+                            {{comment_form.text.label}}{%if comment_form.text.errors%}{% for e in comment_form.text.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                            {{comment_form.text(class='form-control')}}
                         </div>
+                        <div class="form-group">
+                            {{comment_form.submit(class='btn btn-warning')}}
+                        </div>
+                    </form>
+                </div>
+
+
+
+                 <div class = "row">
+                {% for comment in comments %}
+                    <div class = "row">
+                        {{comment.username()}}在{{comment.date}}说：
+                        <br />{{comment.text}}
                     </div>
-                {% endif %}
-            </div>
-        </div>{# 评论区 end #}
-    </div>
+                {% endfor %}
+                 </div>
+
+            {% else %}
+                <div class = "row">
+                    <p>评论已关闭</p>
+                </div>
+            {% endif %}{# 评论区 end #}
+
+
 </div>
 
 

@@ -9,53 +9,57 @@
 
 <div class="col-lg-9">
 
-    <div class = "row">
-        <div class="col-lg-12">
-            <div class="row">
-                <h3>{%if request.path == url_for('task.add') %}创建新任务{%else%}编辑任务{%endif%}</h3>
-            </div>
-            <div class="row">
-                <div class="form-groups">
-                    <form method="post" >
-                    {{form.hidden_tag()}}
-                {% if task.status != 1  %}{# 未完成状态下的编辑 #}
+    <div class="row">
+        <h3>{%if request.path == url_for('task.add') %}创建新任务{%else%}编辑任务{%endif%}</h3>
+    </div>
+    <div class="row">
+
+        <form method="post" >{{form.hidden_tag()}}
+            {% if task.status != 1  %}{# 未完成状态下的编辑 #}
+                <div class="form-group">
                     {{form.title.label}}{%if form.title.errors%}{% for e in form.title.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
                     {{form.title(class='form-control')}}
-
+                </div>
+                <div class="form-group">
                     {{form.text.label}}{%if form.text.errors%}{% for e in form.text.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
                     {{form.text(class='form-control')}}
-
+                </div>
+                <div class="form-group">
                     {{form.deadline.label}}{%if form.deadline.errors%}{% for e in form.deadline.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
                     {{form.deadline(class="form-control") }}
-
-                {% else %}{# 完成状态下的编辑 #}
-
-                    {{form.title.label}}
-                    {{form.title(class='form-control',readonly='True')}}
-
-                    {{form.text.label}}
-                    {{form.text(class='form-control',readonly='True')}}
-
-                    {{form.deadline.label}}
-                    {{form.deadline(class="form-control",readonly='True') }}
-                {% endif %}
-                    {{form.public_level.label}}{%if form.public_level.errors%}{% for e in form.public_level.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-                    <ul class="radio" id="public_level">
-                        <li><input id="public_level-0" name="public_level" type="radio" value="1" {% if task.public_level ==1 %}checked{%endif%} > <label for="public_level-0">仅自己可见</label></li>
-                        <li><input id="public_level-1" name="public_level" type="radio" value="2"{% if task.public_level ==2 %}checked{%endif%}> <label for="public_level-1">互相关注的好友可见</label></li>
-                        <li><input id="public_level-3" name="public_level" type="radio" value="3"{% if task.public_level ==3 %}checked{%endif%}> <label for="public_level-3">所有人可见</label></li>
-                    </ul>
-
-                    {{form.comment_allowed.label}} {{form.comment_allowed()}}
-
-                        <p>{{form.submit(class='btn btn-success btn-sm')}}  <input type="button" class="btn btn-danger btn-xs task_delete_btn" tid={{task.id}} value="删除"></p>
-                    </form>
                 </div>
+            {% else %}{# 完成状态下的编辑 #}
+                <div class="form-group">
+                {{form.title.label}}
+                {{form.title(class='form-control',readonly='True')}}
+                </div>
+                <div class="form-group">
+                {{form.text.label}}
+                {{form.text(class='form-control',readonly='True')}}
+                </div>
+                <div class="form-group">
+                {{form.deadline.label}}
+                {{form.deadline(class="form-control",readonly='True') }}
+                </div>
+            {% endif %}
+            <div class="form-group">
+            {{form.public_level.label}}{%if form.public_level.errors%}{% for e in form.public_level.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+            <ul class="radio" id="public_level">
+                <li><input id="public_level-0" name="public_level" type="radio" value="1" {% if task.public_level ==1 %}checked{%endif%} > <label for="public_level-0">仅自己可见</label></li>
+                <li><input id="public_level-1" name="public_level" type="radio" value="2"{% if task.public_level ==2 %}checked{%endif%}> <label for="public_level-1">互相关注的好友可见</label></li>
+                <li><input id="public_level-3" name="public_level" type="radio" value="3"{% if task.public_level ==3 %}checked{%endif%}> <label for="public_level-3">所有人可见</label></li>
+            </ul>
             </div>
+            <div class="form-group">
+            {{form.comment_allowed.label}} {{form.comment_allowed()}}
 
-        </div>
+                <p>{{form.submit(class='btn btn-success')}}  <input type="button" class="btn btn-danger task_delete_btn pull-right" tid={{task.id}} value="删除"></p>
+            </div>
+        </form>
     </div>
 </div>
+
+
     {{ macros.task_sidebar(user=current_user) }}
 
 {% endblock %}

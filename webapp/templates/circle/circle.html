@@ -5,20 +5,18 @@
 {% block body %}
 
 <div class="col-lg-9">
-    <div class = "row">
 
-        {% for people in people_list %}
-            <div class="col-lg-9">
-                <div class = "row">
-                    <h4><a href="{{url_for('people.people',username=people.username)}}">{{ people.username }}</a></h4>
-                    <p>{{people.bio |default('',True) }}</p>
-                    <p>{{people.tasks.all()|length}}任务  {{people.follower.all()| length}}关注者</p>
+    {% for people in people_list %}
 
-                </div>
-            </div>
+        <div class = "row">
+            <h4><a href="{{url_for('people.people',username=people.username)}}">{{ people.username }}</a></h4>
+            <p>{{people.bio |default('',True) }}</p>
+            <p>{{people.tasks.all()|length}}任务  {{people.follower.all()| length}}关注者</p>
 
-        {% endfor %}
-    </div>
+        </div>
+
+    {% endfor %}
+
 </div>
 
 {{ task_macros.task_sidebar(user=current_user) }}

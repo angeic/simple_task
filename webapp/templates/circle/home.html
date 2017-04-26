@@ -12,37 +12,35 @@
             <li {% if request.path == url_for('circle.following') %} class="active" {%else%}{%endif%}><a href="{{url_for('circle.following',)}}">我关注的人</a></li>
             <li {% if request.path == url_for('circle.follower') %} class="active" {%else%}{%endif%}><a href="{{url_for('circle.follower')}}">关注我的人</a></li>
         </ul>
-
-        {% for task in tasks %}
-        <div class="col-lg-9">
-            <div class = "row">
-                <h4><a href="{{url_for('people.people',username=task.user.username)}}">{{task.user.username}}</a></h4>
-            </div>
-
-            <div class = "row">
-                <h5><a href="{{url_for('task.page',task_id=task.id)}}">{{ task.title }}</a></h5>
-                <small>计划完成时间：{{task.deadline}} {% if task.done_time %}| 完成时间：{{task.done_time}}{%endif%}
-                    {% if task.is_overtime() %} | {{task.over_time() }}{%endif%}</small>
-
-                <p>{{ task.text }}</p>
-
-            </div>
-        </div>
-        <div class="col-lg-9">
-            <div class = "row">
-                <small>
-                    {% if task.check_liked() %}
-                        <input type="button" class="btn btn-primary btn-xs like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
-                    {% else %}
-                        <input type="button" class="btn btn-default btn-xs like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
-                    {% endif %}
-
-                    {%if not task.comment_allowed%}评论已关闭{%else%}{{ task.comments.all() | length }}个评论{%endif%}
-                </small>
-            </div>
-        </div>
-        {% endfor %}
     </div>
+    {% for task in tasks %}
+
+        <div class = "row">
+            <h4><a href="{{url_for('people.people',username=task.user.username)}}">{{task.user.username}}</a></h4>
+        </div>
+
+        <div class = "row">
+            <h5><a href="{{url_for('task.page',task_id=task.id)}}">{{ task.title }}</a></h5>
+            <small>计划完成时间：{{task.deadline}} {% if task.done_time %}| 完成时间：{{task.done_time}}{%endif%}
+                {% if task.is_overtime() %} | {{task.over_time() }}{%endif%}</small>
+
+            <p>{{ task.text }}</p>
+        </div>
+
+        <div class = "row">
+            <small>
+                {% if task.check_liked() %}
+                    <input type="button" class="btn btn-primary btn-xs like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
+                {% else %}
+                    <input type="button" class="btn btn-default btn-xs like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
+                {% endif %}
+
+                {%if not task.comment_allowed%}评论已关闭{%else%}{{ task.comments.all() | length }}个评论{%endif%}
+            </small>
+        </div>
+
+    {% endfor %}
+
 </div>
 
 {{ task_macros.task_sidebar(user=current_user) }}
