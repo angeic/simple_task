@@ -1,6 +1,6 @@
 from flask import Blueprint, url_for, redirect, render_template, flash, session, request
 from webapp.models import User
-from flask_login import login_user
+from flask_login import login_user, current_user
 from webapp.form import LoginForm, RegisterForm
 
 login_blueprint = Blueprint(
@@ -16,14 +16,21 @@ def index():
     action = request.args.get('action')
     login_form = LoginForm()
     register_form = RegisterForm()
-    if register_form.validate_on_submit():
-        flash('注册成功，请登录', category='success')
-        return redirect(url_for('login.index'))
-    if login_form.validate_on_submit():
-        user = User.query.filter_by(username=login_form.username.data).first()
-        login_user(user, remember=login_form.remember.data)
-        flash('欢迎回来，{}'.format(user.username), category='success')
-        return redirect(url_for('task.main'))
+
+    if action != 'register':
+        if login_form.validate_on_submit():
+            user = User.query.filter_by(username=login_form.username.data).first()
+            login_user(user, remember=login_form.remember.data)
+            flash('欢迎回来，{}'.format(user.username), category='success')
+            return redirect(url_for('task.main'))
+
+    if action == 'register':
+        if register_form.validate_on_submit():
+            user = User.query.filter_by(username=register_form.username.data).first()
+            login_user(user, remember=False)
+            flash('欢迎，{}'.format(current_user.username), category='success')
+            return redirect(url_for('task.main'))
+
     return render_template('index.html', login_form=login_form, register_form=register_form, action=action)
 
 

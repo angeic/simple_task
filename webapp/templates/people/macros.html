@@ -24,5 +24,8 @@
             {%if user.relation() %}我关注的{%for the_people in user.relation()%} {{the_people.username}}{%endfor%} 也关注了他{% endif %}
 
         </div>
+        <div class = "row">
+            © 2017 Simple Task
+        </div>
     </div>
 {% endmacro %}

@@ -3,60 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{% block title %}Simple Task{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SimpleTask{% endblock %}</title>
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
 </head>
-<body style="padding:50px">
+<body>
 <div class = "container">
 
 
 <div class="col-sm-4 col-md-offset-4">
-    <div class="row">
-        <h1>Simple Task</h1>
+    <div class="row page-header">
+        <h1 class="text-center">SimpleTask</h1>
     </div>
 
 {%if action == 'register' %}
 <div class="row">
 
     <form method="post">{{register_form.hidden_tag()}}
-        <div class="row">
-            <div class="form-groups">
-                <ul >
-                    <li><a href="{{url_for('login.index') }}">登录</a></li>
-                    <li><a href="{{url_for('login.index',action='register')}}">注册</a></li>
-                    <li><a href="https://api.weibo.com/oauth2/authorize?response_type=code&client_id=3871744715&redirect_uri=http://simple.loadmemory.org/wb/callback"><img src="http://img.t.sinajs.cn/t4/appstyle/open/images/website/loginbtn/loginbtn_06.png" /></a></li>
-                </ul>
+        <div class="form-group">
+            <div class="row text-center">
+                <a href="{{url_for('login.index') }}" class="btn btn-default">登录</a>
+                <a href="{{url_for('login.index',action='register')}}" class="btn btn-default active">注册</a>
+                <a href="http://t.cn/RX8Pg6A"><img src="http://img.t.sinajs.cn/t4/appstyle/open/images/website/loginbtn/loginbtn_06.png" /></a>
             </div>
         </div>
-        <div class="row">
-            <div class="form-groups">
-                {{register_form.username.label}}{%if register_form.username.errors%}{% for e in register_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-                {{register_form.username(class='form-control')}}
-            </div>
+        <div class="form-group">
+            {{register_form.username(class='form-control input-lg',placeholder='账号',id="inputError")}}{%if register_form.username.errors%}{% for e in register_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
         </div>
-        <div class="row">
-            <div class="form-groups">
-                {{register_form.email.label}}{%if register_form.email.errors%}{% for e in register_form.email.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-                {{register_form.email(class='form-control')}}
-            </div>
+        <div class="form-group">
+            {{register_form.email(class='form-control input-lg',placeholder='Email')}}{%if register_form.email.errors%}{% for e in register_form.email.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
         </div>
-        <div class="row">
-            <div class="form-groups">
-                {{register_form.password.label}}{% if register_form.password.errors %}{% for e in register_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-                {{register_form.password(class='form-control')}}
-            </div>
+        <div class="form-group">
+            {{register_form.password(class='form-control input-lg',placeholder='密码')}}{% if register_form.password.errors %}{% for e in register_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
         </div>
-        <div class="row">
-            <div class="form-groups">
-                {{register_form.password_verify.label}}{% if register_form.password_verify.errors %}{% for e in register_form.password_verify.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-                {{register_form.password_verify(class='form-control')}}
-            </div>
+        <div class="form-group">
+            {{register_form.password_verify(class='form-control input-lg',placeholder='确认密码')}}{% if register_form.password_verify.errors %}{% for e in register_form.password_verify.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
         </div>
-        <div class="row">
-            <div class="form-groups">
-                {{ register_form.register_submit(class="btn btn-primary") }}
-            </div>
+        <div class="form-group">
+            {{ register_form.register_submit(class="btn btn-primary btn-block") }}
         </div>
     </form>
 </div>
@@ -64,37 +48,25 @@
 
 
 <div class="row">
-    <form method="post" >{{login_form.hidden_tag()}}
-        <div class="row">
-            <div class="form-groups">
-                <ul >
-                    <li><a href="{{url_for('login.index') }}">登录</a></li>
-                    <li><a href="{{url_for('login.index',action='register')}}">注册</a></li>
-                    <li><a href="https://api.weibo.com/oauth2/authorize?response_type=code&client_id=3871744715&redirect_uri=http://simple.loadmemory.org/wb/callback"><img src="http://img.t.sinajs.cn/t4/appstyle/open/images/website/loginbtn/loginbtn_06.png" /></a></li>
-                </ul>
+    <form method="post">{{login_form.hidden_tag()}}
+        <div class="form-group">
+            <div class="text-center">
+                <a href="{{url_for('login.index') }}" class="btn btn-default active">登录</a>
+                <a href="{{url_for('login.index',action='register')}}" class="btn btn-default">注册</a>
+                <a href="http://t.cn/RX8Pg6A"><img src="http://img.t.sinajs.cn/t4/appstyle/open/images/website/loginbtn/loginbtn_06.png" /></a>
             </div>
         </div>
-        <div class="row">
-            <div class="form-groups">
-                {{login_form.username.label}}{%if login_form.username.errors%}{% for e in login_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-                {{login_form.username(class='form-control')}}
-            </div>
+        <div class="form-group">
+            {{login_form.username(class='form-control input-lg',placeholder='账号')}}{%if login_form.username.errors%}{% for e in login_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
         </div>
-        <div class="row">
-            <div class="form-groups">
-                {{login_form.password.label}}{% if login_form.password.errors %}{% for e in login_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-                {{login_form.password(class='form-control')}}
-            </div>
+        <div class="form-group">
+            {{login_form.password(class='form-control input-lg',placeholder='密码')}}{% if login_form.password.errors %}{% for e in login_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
         </div>
-        <div class="row">
-            <div class="form-groups">
-                <label for="remember">{{login_form.remember(class='checkbox')}}记住我</label>
-            </div>
+        <div class="form-group">
+            <input type="checkbox" id="remember" name="remember"><label>下次自动登录</label >
         </div>
-        <div class="row">
-            <div class="form-groups">
-                {{ login_form.login_submit(class="btn btn-primary") }}
-            </div>
+        <div class="form-group">
+            {{ login_form.login_submit(class="btn btn-primary btn-block") }}
         </div>
     </form>
 </div>
@@ -112,6 +84,5 @@
 <script src="//cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="{{url_for('static',filename='button.js')}}"></script>
-
 </body>
 </html>
