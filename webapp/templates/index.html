@@ -22,8 +22,8 @@
     <form method="post">{{register_form.hidden_tag()}}
         <div class="form-group">
             <div class="row text-center">
-                <a href="{{url_for('login.index') }}" class="btn btn-default">登录</a>
-                <a href="{{url_for('login.index',action='register')}}" class="btn btn-default active">注册</a>
+                <a href="{{url_for('login.home') }}" class="btn btn-default">登录</a>
+                <a href="{{url_for('login.home',action='register')}}" class="btn btn-default active">注册</a>
                 <a href="http://t.cn/RX8Pg6A"><img src="http://img.t.sinajs.cn/t4/appstyle/open/images/website/loginbtn/loginbtn_06.png" /></a>
             </div>
         </div>
@@ -51,8 +51,8 @@
     <form method="post">{{login_form.hidden_tag()}}
         <div class="form-group">
             <div class="text-center">
-                <a href="{{url_for('login.index') }}" class="btn btn-default active">登录</a>
-                <a href="{{url_for('login.index',action='register')}}" class="btn btn-default">注册</a>
+                <a href="{{url_for('login.home') }}" class="btn btn-default active">登录</a>
+                <a href="{{url_for('login.home',action='register')}}" class="btn btn-default">注册</a>
                 <a href="http://t.cn/RX8Pg6A"><img src="http://img.t.sinajs.cn/t4/appstyle/open/images/website/loginbtn/loginbtn_06.png" /></a>
             </div>
         </div>

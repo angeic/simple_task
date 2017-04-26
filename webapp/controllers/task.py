@@ -12,7 +12,7 @@ task_blueprint = Blueprint(
 
 @task_blueprint.route('/', methods=['POST', 'GET'])
 @login_required
-def main():
+def home():
     # 最后期限倒序
     tasks = Task.query.filter(Task.user_id == current_user.id, Task.status != 1).order_by(Task.deadline.asc(), Task.create_time.asc()).all()
     return render_template('task/task.html',
@@ -45,7 +45,7 @@ def add():
         db.session.add(task)
         db.session.commit()
         flash('任务创建成功！', category='info')
-        return redirect(url_for('task.main'))
+        return redirect(url_for('task.home'))
     return render_template('task/task_new.html',
                            form=form,
                            page_title='创建任务',

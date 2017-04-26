@@ -8,7 +8,19 @@
 
         {% for task in tasks %}
             <div class = "row">
-                <h3><a href="{{url_for('people.task',task_id=task.id)}}">{{ task.title }}</a></h3>
+                <h3>
+                    <a href="{{url_for('people.task',task_id=task.id)}}">{{ task.title }}</a>
+                    {#状态标记#}
+                    {% if task.status == 1 %}
+                    <input type="button" class="btn btn-success btn-xs disabled" value="已完成">
+                    {%else%}
+                        {% if task.is_overtime() %}
+                            <input type="button" class="btn btn-warning btn-xs disabled" value="未完成"> {#超时#}
+                            {%else%}
+                            <input type="button" class="btn btn-primary btn-xs disabled" value="未完成"> {#未超时#}
+                            {%endif%}
+                    {%endif%}
+                </h3>
                 <small>计划完成时间：{{task.deadline}} {% if task.done_time %}| 完成时间：{{task.done_time}}{%endif%}
                     {% if task.is_overtime() %} | {{task.over_time() }}{%endif%}</small>
 

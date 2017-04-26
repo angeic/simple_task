@@ -45,6 +45,30 @@ def task(task_id):
                            )
 
 
+@people_blueprint.route('/<username>/following')
+@login_required
+def following(username):
+    display_user = User.query.filter_by(username=username).first()
+    people_list = display_user.following.all()
+    return render_template('explore/home.html',
+                           page_title='{}关注的人'.format(username),
+                           people_list=people_list,
+                           display_user=display_user
+                           )
+
+
+@people_blueprint.route('/<username>/follower')
+@login_required
+def follower(username):
+    display_user = User.query.filter_by(username=username).first()
+    people_list = display_user.follower.all()
+    return render_template('explore/home.html',
+                           page_title='关注{}的人'.format(username),
+                           people_list=people_list,
+                           display_user=display_user
+                           )
+
+
 @people_blueprint.route('/do')
 @login_required
 def do():

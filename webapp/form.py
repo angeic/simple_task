@@ -74,7 +74,7 @@ class TaskForm(FlaskForm):
     title = StringField('主题', validators=[DataRequired('未填写主题'), length(max=100, message='长度不能超过100')])
     text = TextAreaField('内容', validators=[DataRequired('未填写内容'), length(max=1000, message='长度不能超过1000')])
     deadline = DateTimeField('到期时间', validators=[DataRequired('未设置到期时间')])
-    public_level = RadioField('公开级别', choices=[('1', '仅自己可见'), ('2', '好友可见'), ('3', '所有人可见')])
+    public_level = RadioField('公开级别', choices=[('1', '仅自己可见'), ('2', '自己关注的人可见'), ('3', '所有人可见')])
     comment_allowed = BooleanField('允许评论', default=True)
     submit = SubmitField('提交')
 

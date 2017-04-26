@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% import "task/macros.html" as task_macros %}
+{% import "people/macros.html" as people_macros %}
 {% block title %}{{page_title}} - {{super()}}{% endblock %}
 
 {% block body %}
 
-<div class="col-lg-9">
+<div class="col-sm-9">
 
     {% for people in people_list %}
 
@@ -19,6 +19,6 @@
 
 </div>
 
-{{ task_macros.task_sidebar(user=current_user) }}
+{{ people_macros.people_sidebar(display_user,current_user) }}
 
 {% endblock %}

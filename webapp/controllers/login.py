@@ -10,7 +10,7 @@ login_blueprint = Blueprint(
 
 
 @login_blueprint.route('/', methods=['POST', 'GET'])
-def index():
+def home():
     if 'user_id' in session:
         return redirect(url_for('task.main'))
     action = request.args.get('action')
@@ -22,15 +22,21 @@ def index():
             user = User.query.filter_by(username=login_form.username.data).first()
             login_user(user, remember=login_form.remember.data)
             flash('欢迎回来，{}'.format(user.username), category='success')
-            return redirect(url_for('task.main'))
+            return redirect(url_for('task.home'))
 
     if action == 'register':
         if register_form.validate_on_submit():
             user = User.query.filter_by(username=register_form.username.data).first()
             login_user(user, remember=False)
             flash('欢迎，{}'.format(current_user.username), category='success')
-            return redirect(url_for('task.main'))
+            return redirect(url_for('task.home'))
 
     return render_template('index.html', login_form=login_form, register_form=register_form, action=action)
 
 
+@login_blueprint.route('/check',)
+def check():
+    if 'user_id' in session:
+        return redirect(url_for('task.home'))
+    else:
+        return redirect(url_for('login.home'))

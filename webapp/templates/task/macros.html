@@ -1,5 +1,5 @@
 {% macro task_sidebar(user) %}
-    <div class ="col-lg-3">
+    <div class ="col-sm-3">
         <div class = "row">
             <h2>{{user.username}}</h2>
 
@@ -12,7 +12,7 @@
             获得了{{user.liked.all() |length }}个赞
         </div>
         <div class="row">
-            关注了<a href="{{url_for('circle.following')}}">{{user.following.all()|length}}</a>，关注者<a href="{{url_for('circle.follower')}}">{{user.follower.all()|length}}</a>
+            关注了<a href="{{url_for('people.following',username=user.username)}}">{{user.following.all()|length}}</a>，关注者<a href="{{url_for('people.follower',username=user.username)}}">{{user.follower.all()|length}}</a>
         </div>
         <div class = "row">
         © 2017 Simple Task

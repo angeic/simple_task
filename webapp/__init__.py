@@ -10,7 +10,7 @@ from .controllers.weibo import weibo_blueprint
 from .controllers.login import login_blueprint
 from .controllers.circle import circle_blueprint
 from .controllers.errors import error_blueprints
-
+from .controllers.explore import explore_blueprint
 
 def create_app(object_name):
     app = Flask(__name__)
@@ -23,15 +23,16 @@ def create_app(object_name):
     app.register_blueprint(weibo_blueprint, url_prefix='/wb')
     app.register_blueprint(login_blueprint, url_prefix='/login')
     app.register_blueprint(circle_blueprint, url_prefix='/circle')
+    app.register_blueprint(explore_blueprint, url_prefix='/explore')
     app.register_blueprint(error_blueprints)
 
     @app.route('/')
     def home():
-        return redirect(url_for('task.main'))
+        return redirect(url_for('login.check'))
 
     @app.route('/logout')
     def logout():
         logout_user()
-        return redirect(url_for('login.index'))
+        return redirect(url_for('login.home'))
 
     return app

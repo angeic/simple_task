@@ -46,7 +46,7 @@
             {{form.public_level.label}}{%if form.public_level.errors%}{% for e in form.public_level.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
             <ul class="radio" id="public_level">
                 <li><input id="public_level-0" name="public_level" type="radio" value="1" {% if task.public_level ==1 %}checked{%endif%} > <label for="public_level-0">仅自己可见</label></li>
-                <li><input id="public_level-1" name="public_level" type="radio" value="2"{% if task.public_level ==2 %}checked{%endif%}> <label for="public_level-1">互相关注的好友可见</label></li>
+                <li><input id="public_level-1" name="public_level" type="radio" value="2"{% if task.public_level ==2 %}checked{%endif%}> <label for="public_level-1">自己关注的人可见</label></li>
                 <li><input id="public_level-3" name="public_level" type="radio" value="3"{% if task.public_level ==3 %}checked{%endif%}> <label for="public_level-3">所有人可见</label></li>
             </ul>
             </div>
