@@ -12,6 +12,7 @@ from .controllers.circle import circle_blueprint
 from .controllers.errors import error_blueprints
 from .controllers.explore import explore_blueprint
 
+
 def create_app(object_name):
     app = Flask(__name__)
     app.config.from_object(object_name)
