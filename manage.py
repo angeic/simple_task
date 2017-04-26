@@ -1,9 +1,9 @@
 from flask_script import Manager, Server
 from webapp import create_app
-from webapp.config import DevConfig
+from webapp.config import Config
 from webapp.models import db, User, Task, Comment, Likes
 
-app = create_app(DevConfig)
+app = create_app(Config)
 
 manager = Manager(app)
 manager.add_command('server', Server())

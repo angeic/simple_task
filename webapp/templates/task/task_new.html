@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% import "task/macros.html" as macros %}
+{% import "macros.html" as main_macros %}
 {% block title %}{{page_title}} - {{super()}}{% endblock %}
 
 {% block body %}
@@ -38,6 +38,6 @@
     </div>
 </div>
 
-    {{ macros.task_sidebar(user=current_user) }}
+    {{ main_macros.task_sidebar(user=current_user) }}
 
 {% endblock %}

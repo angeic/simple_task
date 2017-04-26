@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% import "people/macros.html" as people_macros %}
+{% import "macros.html" as main_macros %}
 {% block title %}{{page_title}} - {{super()}}{% endblock %}
 
 {% block body %}
@@ -19,6 +19,6 @@
 
 </div>
 
-{{ people_macros.people_sidebar(display_user,current_user) }}
+{{ main_macros.people_sidebar(display_user,current_user) }}
 
 {% endblock %}

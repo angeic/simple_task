@@ -1,5 +1,5 @@
-from flask import Blueprint, url_for, redirect, render_template, flash, session, g, abort, request
-from webapp.models import Task, db, Comment, User
+from flask import Blueprint, render_template
+from webapp.models import Task
 from flask_login import login_required, current_user
 from sqlalchemy.sql.expression import or_, and_
 
@@ -12,6 +12,7 @@ circle_blueprint = Blueprint(
 @circle_blueprint.route('/')
 @login_required
 def home():
+
     follower = current_user.follower.all()
     following = current_user.following.all()
     tasks = Task.query.filter(
@@ -24,9 +25,3 @@ def home():
                            follower=follower,
                            following=following
                            )
-
-
-
-
-
-

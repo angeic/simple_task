@@ -3,7 +3,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin, current_user
 from sqlalchemy.sql import func
 from datetime import datetime
-from flask import flash, session
+from flask import session
 db = SQLAlchemy()
 
 
@@ -156,6 +156,12 @@ class Task(db.Model):
         for uid in self.liked.all():
             if str(uid) == session['user_id']:
                 return True
+
+    # 距离超时一小时
+    def one_hour_deadline(self):
+        the_time = self.deadline - datetime.now()
+        if 0 < the_time.total_seconds() < 3600:
+            return True
 
 
 class Comment(db.Model):

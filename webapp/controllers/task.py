@@ -1,4 +1,4 @@
-from flask import Blueprint, url_for, redirect, render_template, flash, session, g, abort, request
+from flask import Blueprint, url_for, redirect, render_template, flash, abort, request
 from webapp.models import Task, db, Comment
 from webapp.form import TaskForm, EditForm, CommentForm
 from flask_login import login_required, current_user
@@ -100,6 +100,8 @@ def edit(task_id):
 @login_required
 def page(task_id):
     task = Task.query.get_or_404(task_id)
+    print(task.user)
+    print(current_user)
     if task.status == 9:
         abort(404)
     if current_user != task.user:

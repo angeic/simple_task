@@ -1,42 +1,38 @@
 {% extends "base.html" %}
-{% import "task/macros.html" as task_macros %}
+{% import "macros.html" as main_macros %}
 {% block title %}{{page_title}} - {{super()}}{% endblock %}
 
 {% block body %}
 
 <div class="col-sm-9">
 
+{%if tasks%}
+    {% for task in tasks %}
 
-        {% for task in tasks %}
+        <div class = "row">
+            <h3><a href="{{url_for('task.page',task_id=task.id)}}">{{ task.title }}</a>{{main_macros.task_status_mark(task)}}<small><a href="{{url_for('task.edit',task_id=task.id)}}">编辑</a></small></h3>
+            <small>计划完成时间：{{task.deadline}} {% if task.done_time %}| 完成时间：{{task.done_time}}{%endif%}
+                {% if task.is_overtime() %} | {{task.over_time() }}{%endif%}</small>
 
-            <div class = "row">
-                <h3><a href="{{url_for('task.page',task_id=task.id)}}">{{ task.title }}</a> <small><a href="{{url_for('task.edit',task_id=task.id)}}">编辑</a></small></h3>
-                <small>计划完成时间：{{task.deadline}} {% if task.done_time %}| 完成时间：{{task.done_time}}{%endif%}
-                    {% if task.is_overtime() %} | {{task.over_time() }}{%endif%}</small>
+            <p>{{ task.text }}</p>
 
-                <p>{{ task.text }}</p>
+        </div>
 
-            </div>
+        <div class = "row">
+            {% if task.status == 0%}<input type="button" class="btn btn-success task-done-btn" tid={{task.id}} value="任务完成">{% endif %}
 
-            <div class = "row">
-                {% if task.status == 0%}<input type="button" class="btn btn-success task-done-btn" tid={{task.id}} value="任务完成">{% endif %}
+            {% if task.comment_allowed == 1 %}<input type="button" class="btn btn-default comment_allow_btn" tid={{task.id}} comment_status="0" value="关闭评论">
+            {% else %}<input type="button" class="btn btn-default comment_allow_btn" tid={{task.id}} comment_status="1" value="打开评论">{%endif%}
+        </div>
 
-                {% if task.comment_allowed == 1 %}<input type="button" class="btn btn-default comment_allow_btn" tid={{task.id}} comment_status="0" value="关闭评论">
-                {% else %}<input type="button" class="btn btn-default comment_allow_btn" tid={{task.id}} comment_status="1" value="打开评论">{%endif%}
-            </div>
+        <div class = "row">
+            {{ main_macros.task_like_mark(task,current_user) }} {#点赞模块#}
+        </div>
 
-            <div class = "row">
-                <small>
-                    <input type="button" class="btn btn-default btn-sm" value="{{task.liked.all()|length}}赞" >
-
-                    {%if not task.comment_allowed%}评论已关闭{%else%}{{ task.comments.all() | length }}个评论{%endif%}
-                </small>
-            </div>
-
-        {% endfor %}
-
+    {% endfor %}
+{%else%}没有内容可以展示哦{%endif%}
 </div>
 
-{{ task_macros.task_sidebar(user=current_user) }}
+{{ main_macros.task_sidebar(user=current_user) }}
 
 {% endblock %}

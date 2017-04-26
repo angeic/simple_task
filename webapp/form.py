@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, PasswordField, SubmitField, TextAreaField, DateTimeField, RadioField, IntegerField
-from wtforms.validators import DataRequired, Email, length, EqualTo, Optional
-from .models import User, db, Task
-from flask import session, g, flash
+from wtforms import StringField, BooleanField, PasswordField, SubmitField, TextAreaField, DateTimeField, RadioField
+from wtforms.validators import DataRequired, Email, length, EqualTo
+from .models import User, db
 from datetime import datetime
 
 
@@ -105,5 +104,3 @@ class EditForm(FlaskForm):
 class CommentForm(FlaskForm):
     text = TextAreaField('评论内容', validators=[DataRequired('未填写内容'), length(max=1000, message='长度不能超过1000')])
     submit = SubmitField('提交')
-
-

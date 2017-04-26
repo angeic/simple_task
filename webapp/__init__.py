@@ -1,5 +1,5 @@
 from flask import Flask, redirect, url_for, render_template, session, flash, g, request
-from webapp.config import DevConfig
+from webapp.config import Config
 from .models import db, User, Task, Likes
 from .form import LoginForm, RegisterForm
 from webapp.extensions import login_manager

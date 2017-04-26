@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% import "task/macros.html" as macros %}
+{% import "macros.html" as main_macros %}
 {% block title %}{{task.title}} - {{super()}}{% endblock %}
 
 {% block body %}
@@ -9,7 +9,7 @@
 
 
         <div class = "row">{# 任务头 #}
-            <h3>{{ task.title }} <small><a href="{{url_for('task.edit',task_id=task.id)}}">编辑</a></small></h3>
+            <h3>{{ task.title }}{{main_macros.task_status_mark(task)}} <small><a href="{{url_for('task.edit',task_id=task.id)}}">编辑</a></small></h3>
             <small>创建于{{task.create_time}}，计划完成时间{{task.deadline}}{% if task.is_overtime() %}，{{task.over_time() }}{%endif%}</small>
         </div>
 
@@ -20,6 +20,7 @@
 
 
         <div class = "row">{# 功能按钮 start #}
+            {{ main_macros.task_like_mark(task,current_user) }} {#点赞模块#}
             {% if task.status !=1 %}
                 <input type="button" class="btn btn-success task-done-btn" tid={{task.id}} value="任务完成">
             {% endif %}

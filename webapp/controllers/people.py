@@ -14,7 +14,10 @@ people_blueprint = Blueprint(
 def people(username):
     display_user = User.query.filter_by(username=username).first()
     # 完成时间倒序
-    tasks = Task.query.filter(Task.user_id == display_user.id).order_by(Task.create_time.desc()).all()
+    if current_user in display_user.following.all():
+        tasks = Task.query.filter(Task.user_id == display_user.id, Task.status.in_([2,3])).order_by(Task.create_time.desc()).all()
+    else:
+        tasks = Task.query.filter(Task.user_id == display_user.id, Task.status == 3).order_by(Task.create_time.desc()).all()
     return render_template('people/people.html',
                            display_user=display_user,
                            tasks=tasks

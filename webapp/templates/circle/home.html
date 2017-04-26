@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% import "task/macros.html" as task_macros %}
+{% import "macros.html" as main_macros %}
 {% block title %}{{page_title}} - {{super()}}{% endblock %}
 
 {% block body %}
@@ -13,11 +13,7 @@
                 头像占位{#<img src="{{url_for('static',filename='images/1.jpg')}}" width="40" height="40" />#}
             </div>
             <div class="row">
-                {% if task.check_liked() %}
-                    <input type="button" class="btn btn-primary btn-xs like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
-                {% else %}
-                    <input type="button" class="btn btn-default btn-xs like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
-                {% endif %}
+                {{ main_macros.task_like_mark(task,current_user) }} {#点赞模块#}
             </div>
         </div>
         <div class="col-sm-11">
@@ -26,7 +22,9 @@
             </div>
 
             <div class = "row">
-                <h5><a href="{{url_for('task.page',task_id=task.id)}}">{{ task.title }}</a></h5>
+                <h5>
+                    <a href="{{url_for('people.task',task_id=task.id)}}">{{ task.title }}</a>{{main_macros.task_status_mark(task)}}
+                </h5>
                 <small>计划完成时间：{{task.deadline}} {% if task.done_time %}| 完成时间：{{task.done_time}}{%endif%}
                     {% if task.is_overtime() %} | {{task.over_time() }}{%endif%}</small>
                 <p>{{ task.text }}</p>
@@ -46,6 +44,6 @@
 
 </div>
 
-{{ task_macros.task_sidebar(user=current_user) }}
+{{ main_macros.task_sidebar(user=current_user) }}
 
 {% endblock %}

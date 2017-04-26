@@ -1,21 +1,14 @@
-from flask import Blueprint, url_for, redirect, render_template, flash, session, request, g
-from webapp.models import User, Task, db
-from flask_login import logout_user, login_user, login_required, current_user
+from flask import Blueprint, url_for, redirect, flash, session, request
+from webapp.models import User, db
+from flask_login import login_user
 import requests
 import json
-from webapp.config import DevConfig
+from webapp.config import Config
+
 weibo_blueprint = Blueprint(
     'weibo',
     __name__
 )
-
-
-@weibo_blueprint.before_request
-def check_user():
-    if 'user_id' in session:
-        g.current_user = User.query.filter_by(id=int(session['user_id'])).one()
-    else:
-        g.current_user = None
 
 
 @weibo_blueprint.route('/callback', methods=['POST', 'GET'])
@@ -24,8 +17,8 @@ def callback():
     if code:
         wbsession = requests.Session()
         postdata = {
-            'client_id': DevConfig.WBAppKey,
-            'client_secret': DevConfig.WBAppSecret,
+            'client_id': Config.WBAppKey,
+            'client_secret': Config.WBAppSecret,
             'grant_type': 'authorization_code',
             'code': code,
             'redirect_uri': 'http://simple.loadmemory.org/wb/callback'
@@ -41,7 +34,7 @@ def callback():
             # 该用户已注册
             if user:
                 login_user(user, remember=True)
-                return redirect(url_for('task.main'))
+                return redirect(url_for('task.home'))
             # 该用户未注册
             else:
                 get_wbuser = wbsession.get('https://api.weibo.com/2/users/show.json?access_token={}&uid={}'.format(token_data['access_token'], token_data['uid']))
@@ -54,7 +47,7 @@ def callback():
                 user = User.query.filter_by(wb_uid=token_data['uid']).first()
                 login_user(user, remember=True)
                 flash('欢迎微博用户{}'.format(wbuser_info['screen_name']), category='info')
-                return redirect(url_for('task.main'))
+                return redirect(url_for('task.home'))
         else:
             return '<验证失败>'
 
