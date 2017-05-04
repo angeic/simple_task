@@ -34,7 +34,7 @@ def home():
     return render_template('index.html', login_form=login_form, register_form=register_form, action=action)
 
 
-@login_blueprint.route('/check',)
+@login_blueprint.route('/check')
 def check():
     if 'user_id' in session:
         return redirect(url_for('task.home'))

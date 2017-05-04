@@ -14,7 +14,7 @@ task_blueprint = Blueprint(
 @login_required
 def home():
     # 最后期限倒序
-    tasks = Task.query.filter(Task.user_id == current_user.id, Task.status != 1).order_by(Task.deadline.asc(), Task.id.asc()).all()
+    tasks = Task.query.filter(Task.user_id == current_user.id, Task.status != 1).order_by(Task.status.asc(),Task.deadline.asc(), Task.id.asc()).all()
     return render_template('task/task.html',
                            page_title='任务列表',
                            tasks=tasks,
@@ -57,8 +57,6 @@ def add():
 @login_required
 def edit(task_id):
     task = Task.query.get_or_404(task_id)
-    if task.status == 9:
-        abort(404)
     if current_user != task.user:
         abort(403)
 
@@ -100,11 +98,7 @@ def edit(task_id):
 @login_required
 def page(task_id):
     task = Task.query.get_or_404(task_id)
-    print(task.user)
-    print(current_user)
-    if task.status == 9:
-        abort(404)
-    if current_user != task.user:
+    if not task.task_auth():
         abort(403)
     comment_form = CommentForm()
     comments = Comment.query.filter_by(task_id=task.id).order_by(Comment.date).all()
@@ -115,12 +109,12 @@ def page(task_id):
         new_comment.user_id = current_user.id
         db.session.add(new_comment)
         db.session.commit()
-        flash('评论提交成功', category='info')
+        # flash('评论提交成功', category='info')
         return redirect(url_for('task.page', task_id=task.id))
     return render_template('task/task_page.html',
                            task=task,
                            comments=comments,
-                           comment_form=comment_form
+                           comment_form=comment_form,
                            )
 
 

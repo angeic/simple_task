@@ -3,7 +3,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin, current_user
 from sqlalchemy.sql import func
 from datetime import datetime
-from flask import session
+from flask import session, abort
 db = SQLAlchemy()
 
 
@@ -23,6 +23,7 @@ class User(db.Model, UserMixin):
     reg_date = db.Column(db.TIMESTAMP(), server_default=func.now())
     last_login_date = db.Column(db.DateTime())
     wb_uid = db.Column(db.String(20))
+    avatar = db.Column(db.String(500))
     tasks = db.relationship(
         'Task',
         backref='user',
@@ -90,8 +91,10 @@ class User(db.Model, UserMixin):
         if not User.query.filter_by(wb_uid=wb_uid).first():
             self.wb_uid = wb_uid
 
+    # 查询当前登录用户关注的人中是否有人关注了页面显示的用户
     def relation(self):
-        return list(set(current_user.following.all()) & set(self.follower.all()))
+        if current_user.username != self.username:
+            return list(set(current_user.following.all()) & set(self.follower.all()))
 
 
 class Task(db.Model):
@@ -163,6 +166,14 @@ class Task(db.Model):
         if 0 < the_time.total_seconds() < 3600:
             return True
 
+    # 判断当前用户是否有权限查看当前task
+    def task_auth(self):
+        task_user = User.query.get(self.user_id)
+        if current_user.id == self.user_id or self.public_level == 3 or (current_user in task_user.follower.all() and self.public_level == 2):
+            return True
+        else:
+            return False
+
 
 class Comment(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -187,10 +198,9 @@ class Likes(db.Model):
 
     def i_like(self, task_id):
         task = Task.query.get(task_id)
-        if session['user_id'] != str(task.user_id):
-            self.user_id = session['user_id']
-            self.task_id = task.id
-            self.liked_user = task.user_id
+        self.user_id = session['user_id']
+        self.task_id = task.id
+        self.liked_user = task.user_id
 
     def __repr__(self):
         return '{}'.format(self.user_id)

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session
 from webapp.models import Task
 from flask_login import login_required, current_user
 from sqlalchemy.sql.expression import or_, and_
@@ -16,7 +16,8 @@ def home():
     follower = current_user.follower.all()
     following = current_user.following.all()
     tasks = Task.query.filter(
-        or_(and_(Task.user_id.in_([user.id for user in follower]), Task.public_level.in_([2, 3])), and_(Task.user_id.in_([user.id for user in following]), Task.public_level == '3'))
+        or_(and_(Task.user_id.in_([user.id for user in follower]), Task.public_level.in_([2, 3])), and_(Task.user_id.in_([user.id for user in following]), Task.public_level == '3'),
+            Task.user_id == session['user_id'])
     ).order_by(Task.create_time.desc()).all()
     return render_template('circle/home.html',
                            page_title='圈子动态',

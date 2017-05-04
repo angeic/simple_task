@@ -1,3 +1,4 @@
+{#显示task状态#}
 {% macro task_status_mark(task) %}
 
     {% if task.status == 1 %}
@@ -14,73 +15,32 @@
 
 {% endmacro %}
 
-
+{#点赞#}
 {% macro task_like_mark(task,current_user) %}
 
-    {% if current_user.id != task.user.id %}
-        {% if task.check_liked() %}
-            <input type="button" class="btn btn-primary btn-sm like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
-        {% else %}
-            <input type="button" class="btn btn-default btn-sm like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
-        {% endif %}
+{% if current_user.username != task.user.username %}
+    {% if task.check_liked() %}
+        <input type="button" class="btn btn-primary btn-sm like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
     {% else %}
-        <input type="button" class="btn btn-default btn-sm" value="{{task.liked.all()|length}}赞" >
+        <input type="button" class="btn btn-default btn-sm like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
     {% endif %}
+{% else %}
+    <input type="button" class="btn btn-default btn-sm" value="{{task.liked.all()|length}}赞" >
+{% endif %}
 {% endmacro %}
 
 
-{% macro task_sidebar(user) %}
-    <div class ="col-sm-3">
-        <div class = "row">
-            <h2>{{user.username}}</h2>
+{#关注#}
+{% macro follow_mark(following_user,current_user) %}
 
-        </div>
-        <div class = "row">
-            {%if user.bio%}{{user.bio}}{%endif%}
-        </div>
-        <div class="row">
-            创建了{{user.tasks.all()|length}}个任务，{{user.unfinish_task()}}个未完成 <br />
-            获得了{{user.liked.all() |length }}个赞
-        </div>
-        <div class="row">
-            关注了<a href="{{url_for('people.following',username=user.username)}}">{{user.following.all()|length}}</a>，关注者<a href="{{url_for('people.follower',username=user.username)}}">{{user.follower.all()|length}}</a>
-        </div>
-        <div class = "row">
-        © 2017 Simple Task
-        </div>
-    </div>
+{% if current_user != following_user %}
+    {% if current_user.check_following(following_user.id) %}
+        <input type="button" class='btn btn-default btn-xs followbtn' value="取消关注" follow_id={{following_user.id}}>
+    {%else%}
+        <input type="button" class='btn btn-primary btn-xs followbtn' value="关注" follow_id={{following_user.id}}>
+    {%endif%}
+{%endif%}
 
 {% endmacro %}
 
 
-{% macro people_sidebar(user,current_user) %}
-
-    <div class ="col-sm-3">
-        <div class = "row">
-            <h2>{{user.username}}</h2>
-            {% if current_user != user %}
-            {% if current_user.check_following(user.id) %}
-            <input type="button" class='btn btn-default btn-xs followbtn' value="取消关注" follow_id={{user.id}}>
-            {%else%}
-            <input type="button" class='btn btn-primary btn-xs followbtn' value="关注" follow_id={{user.id}}>
-            {%endif%}
-            {%endif%}
-
-        </div>
-        <div class = "row">
-            {%if user.bio%}{{user.bio}}{%endif%}
-        </div>
-        <div class="row">
-            {{user.count_task()}} <br />
-            获得了{{user.liked.all() | length}}个赞
-        </div>
-        <div class="row">
-            关注了{{user.following.all()| length}}，关注者{{user.follower.all()|length}}<br />
-            {%if user.relation() %}我关注的{%for the_people in user.relation()%} {{the_people.username}}{%endfor%} 也关注了他{% endif %}
-
-        </div>
-        <div class = "row">
-            © 2017 Simple Task
-        </div>
-    </div>
-{% endmacro %}

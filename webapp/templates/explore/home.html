@@ -1,24 +1,16 @@
 {% extends "base.html" %}
 {% import "macros.html" as main_macros %}
+{% import "macros_block.html" as macros_block %}
 {% block title %}{{page_title}} - {{super()}}{% endblock %}
 
 {% block body %}
 
 <div class="col-sm-9">
 
-    {% for people in people_list %}
-
-        <div class = "row">
-            <h4><a href="{{url_for('people.people',username=people.username)}}">{{ people.username }}</a></h4>
-            <p>{{people.bio |default('',True) }}</p>
-            <p>{{people.tasks.all()|length}}任务  {{people.follower.all()| length}}关注者</p>
-
-        </div>
-
-    {% endfor %}
+{{ macros_block.people_list(people_list,current_user) }}
 
 </div>
 
-{{ main_macros.people_sidebar(display_user,current_user) }}
+{{ macros_block.sidebar(display_user,current_user) }}
 
 {% endblock %}

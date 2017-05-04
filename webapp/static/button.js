@@ -53,7 +53,7 @@ $(document).ready(function(){
 $(document).ready(function(){
   $(".like_btn").click(function(){
     var task_id = $(this).attr("tid")
-    $.get("/people/do?like_id="+task_id, function(response,status){
+    $.get("/people/do?like_task_id="+task_id, function(response,status){
         if(status=='success') {parent.location.reload()}
         });
 

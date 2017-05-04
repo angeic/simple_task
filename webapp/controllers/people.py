@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, flash, redirect, url_for
+from flask import Blueprint, render_template, request, session, flash, redirect, url_for, abort
 from webapp.models import User, Likes, db, Task, Comment
 from flask_login import login_required, current_user
 from webapp.form import CommentForm
@@ -15,38 +15,15 @@ def people(username):
     display_user = User.query.filter_by(username=username).first()
     # 完成时间倒序
     if current_user in display_user.following.all():
-        tasks = Task.query.filter(Task.user_id == display_user.id, Task.status.in_([2, 3])).order_by(Task.create_time.desc()).all()
+        tasks = Task.query.filter(Task.user_id == display_user.id, Task.public_level.in_([2, 3])).order_by(Task.status.asc(),Task.deadline.asc(), Task.id.asc()).all()
     elif current_user == display_user:
-        tasks = Task.query.filter_by(user_id = current_user.id).order_by(Task.id.desc()).all()
+        tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.id.desc()).all()
     else:
-        tasks = Task.query.filter(Task.user_id == display_user.id, Task.status == 3).order_by(Task.create_time.desc()).all()
+        tasks = Task.query.filter(Task.user_id == display_user.id, Task.public_level == 3).order_by(Task.status.asc(),Task.deadline.asc(), Task.id.asc()).all()
+
     return render_template('people/people.html',
                            display_user=display_user,
                            tasks=tasks
-                           )
-
-
-@people_blueprint.route('/task/<int:task_id>', methods=['POST', 'GET'])
-@login_required
-def task(task_id):
-    task_it = Task.query.get_or_404(task_id)
-    display_user = User.query.get(task_it.user_id)
-    comment_form = CommentForm()
-    comments = Comment.query.filter_by(task_id=task_it.id).order_by(Comment.date).all()
-    if comment_form.validate_on_submit():
-        new_comment = Comment()
-        new_comment.text = comment_form.text.data
-        new_comment.task_id = task.id
-        new_comment.user_id = current_user.id
-        db.session.add(new_comment)
-        db.session.commit()
-        flash('评论提交成功', category='info')
-        return redirect(url_for('task.page', task_id=task.id))
-    return render_template('people/task.html',
-                           display_user=display_user,
-                           task=task_it,
-                           comment_form=comment_form,
-                           comments=comments
                            )
 
 
@@ -89,18 +66,18 @@ def do():
         return 'follow success'
 
     # 点赞模块
-    like_id = request.args.get('like_id')
-    if like_id:
-        like = Likes.query.filter(Likes.user_id == session['user_id'], Likes.task_id == like_id).first()
+    like_task_id = request.args.get('like_task_id')
+    if like_task_id:
+        like = Likes.query.filter(Likes.user_id == session['user_id'], Likes.task_id == like_task_id).first()
         if like:
             db.session.delete(like)
             db.session.commit()
             return 'like action success'
         else:
-            like = Likes()
+            do_like = Likes()
             try:
-                like.i_like(like_id)
-                db.session.add(like)
+                do_like.i_like(like_task_id)
+                db.session.add(do_like)
                 db.session.commit()
             except:
                 return 'like failed'

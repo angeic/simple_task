@@ -1,0 +1,171 @@
+
+{#侧边栏#}
+{% macro sidebar(display_user,current_user) %}
+{% import "macros.html" as main_macros %}
+<div class ="col-sm-3">
+    <div class = "row">
+        <h2>{{display_user.username}}
+            {%if display_user.bio%}<br />
+            <small>{{display_user.bio}}{%endif%}</small></h2>
+    </div>
+    <div class = "row">
+        {{main_macros.follow_mark(display_user,current_user)}}<br /><br />
+    </div>
+
+    <div class ="row">
+        <div class="panel panel-default">
+
+            <div class="panel-body"><div class="IconGraf-iconWrapper"><svg viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg" class="IconGraf-icon" style="height:16px;width:16px;" width="16" height="16" aria-hidden="true"><g><path d="M.718 7.024c-.718 0-.718.63-.718.63l.996 9.693c0 .703.718.65.718.65h1.45c.916 0 .847-.65.847-.65V7.793c-.09-.88-.853-.79-.846-.79l-2.446.02zm11.727-.05S13.2 5.396 13.6 2.89C13.765.03 11.55-.6 10.565.53c-1.014 1.232 0 2.056-4.45 5.83C5.336 6.965 5 8.01 5 8.997v6.998c-.016 1.104.49 2 1.99 2h7.586c2.097 0 2.86-1.416 2.86-1.416s2.178-5.402 2.346-5.91c1.047-3.516-1.95-3.704-1.95-3.704l-5.387.007z"/></g></svg>
+            </div><strong>个人成就</strong></div>
+            <table class="table">
+                <tr><td>
+                    获得了{{display_user.liked.all() | length}}个赞<br>{{display_user.count_task()}}
+                </td></tr>
+
+            </table>
+        </div>
+
+        <div class="panel panel-default">
+
+
+                <table class="table table-bordered">
+                    <tr class="text-center">
+                        <td><a href="{{url_for('people.following',username=display_user.username)}}">关注了<br>{{display_user.following.all()| length}}</a></td>
+                        <td><a href="{{url_for('people.follower',username=display_user.username)}}">关注者<br>{{display_user.follower.all()|length}}</a></td>
+                    </tr>
+                </table>
+
+
+            {%if display_user.relation() %}
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        我关注的人中{{display_user.relation()|length}}人关注了他<br>
+                    {%for the_people in display_user.relation()%}
+                        <a href="{{url_for('people.people',username=the_people.username)}}" title="{{the_people.username}}">
+                            <img src="{{the_people.avatar| default('/static/images/1.jpg',true)}}" width="24" height="24" />
+                        </a>
+                        {%endfor%}
+                    </li>
+                </ul>
+            {% endif %}
+
+
+
+        </div>
+    </div>
+
+
+
+    <div class = "row">
+        © 2017 SimpleTask
+    </div>
+</div>
+
+{% endmacro %}
+
+
+{#展示people列表#}
+{% macro people_list(peoples,current_user) %}
+{% import "macros.html" as main_macros %}
+    {% for people in peoples %}
+        <div class="row">
+            <div class = "col-xs-3 col-sm-2">
+
+                    <img class="img-responsive img-rounded"  src="{{url_for('static',filename='images/male.svg')}}" />
+
+            </div>
+
+            <div class = "col-xs-9 col-sm-10">
+                <div class="pull-right">{{main_macros.follow_mark(people,current_user)}}</div>
+                    <h4><a href="{{url_for('people.people',username=people.username)}}">{{ people.username }}</a></h4>
+                    <p>{{people.bio |default('',True) }}</p>
+                    <p class="text-muted">{{people.tasks.all()|length}}任务 / {{people.follower.all()| length}}关注者 / {{people.liked.all()|length}}赞</p>
+
+            </div>
+
+        </div>
+        <hr />
+    {% endfor %}
+
+
+{% endmacro %}
+
+
+
+{#展示task#}
+{% macro show_task(current_user,tasks) %}
+{% import "macros.html" as main_macros %}
+
+    {%if tasks%}
+        {% for task in tasks %}
+
+            <div class="row">
+                <h5>{{ main_macros.task_like_mark(task,current_user) }} {#点赞模块#}
+                <a href="{{url_for('people.people',username=task.user.username)}}"><img src="{{url_for('static',filename='images/1.jpg')}}" width="32" height="32" /></a>
+                <a href="{{url_for('people.people',username=task.user.username)}}" ><strong>{{task.user.username}}</strong></a> • <small>{{task.create_time}}</small></h5>
+            </div>
+
+            <div class="row">
+                <h6>
+                    <a href="{{url_for('task.page',task_id=task.id)}}"><strong>{{ task.title }}</strong></a>{{main_macros.task_status_mark(task)}}
+                </h6>
+            </div>
+
+            <div class="row">
+                    <small>计划完成时间：{{task.deadline}} {% if task.done_time %}| 完成时间：{{task.done_time}}{%endif%}
+                        {% if task.is_overtime() %} | {{task.over_time() }}{%endif%}</small>
+                    <p>{{ task.text }}</p>
+            </div>
+
+            <div class="row">
+                <small>
+                    {%if not task.comment_allowed%}评论已关闭{%else%}{{ task.comments.all() | length }}个评论{%endif%}
+                </small>
+
+            </div>
+
+            <hr />
+        {% endfor %}
+    {%else%}
+        <div class="row">
+            没有内容可以展示哦
+        </div>
+    {%endif%}
+{% endmacro %}
+
+
+{#评论模块#}
+{% macro task_comment(task,comments,comment_form) %}
+
+    {% if task.comment_allowed %}
+        <div class = "row">
+            <form method="post">
+                {{comment_form.hidden_tag()}}
+                <div class="form-group">
+                    {{comment_form.text.label}}{%if comment_form.text.errors%}{% for e in comment_form.text.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                    {{comment_form.text(class='form-control')}}
+                </div>
+                <div class="form-group">
+                    {{comment_form.submit(class='btn btn-warning')}}
+                </div>
+            </form>
+        </div>
+
+         <div class = "row">
+        {% for comment in comments %}
+            <div class = "row">
+                {{comment.username()}}在{{comment.date}}说：
+                <br />{{comment.text}}
+            </div>
+        {% endfor %}
+         </div>
+
+    {% else %}
+
+        <div class = "row">
+            <p>评论已关闭</p>
+        </div>
+
+    {% endif %}
+
+{% endmacro %}
