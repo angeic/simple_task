@@ -5,8 +5,12 @@
 <div class ="col-sm-3">
     <div class = "row">
         <h2>{{display_user.username}}
-            {%if display_user.bio%}<br />
-            <small>{{display_user.bio}}{%endif%}</small></h2>
+            <small>{{display_user.bio | default('',true)}}</small></h2>
+            {% if display_user.gender == 0 %}
+                <svg width="14" height="16" viewBox="0 0 12 16" class="IconGraf-icon" style="height:16px;width:14px;" aria-hidden="true"><path d="M6 0C2.962 0 .5 2.462.5 5.5c0 2.69 1.932 4.93 4.485 5.407-.003.702.01 1.087.01 1.087H3C1.667 12 1.667 14 3 14s1.996-.006 1.996-.006v1c0 1.346 2.004 1.346 1.998 0-.006-1.346 0-1 0-1S7.658 14 8.997 14c1.34 0 1.34-2-.006-2.006H6.996s-.003-.548-.003-1.083C9.555 10.446 11.5 8.2 11.5 5.5 11.5 2.462 9.038 0 6 0zM2.25 5.55C2.25 3.48 3.93 1.8 6 1.8c2.07 0 3.75 1.68 3.75 3.75C9.75 7.62 8.07 9.3 6 9.3c-2.07 0-3.75-1.68-3.75-3.75z" fill-rule="evenodd"/></svg>
+            {% else %}
+                <svg viewBox="0 0 14 14" width="14" height="16" class="IconGraf-icon" style="height:16px;width:14px;" aria-hidden="true"><path d="M3.025 10.64c-1.367-1.366-1.367-3.582 0-4.95 1.367-1.366 3.583-1.366 4.95 0 1.367 1.368 1.367 3.584 0 4.95-1.367 1.368-3.583 1.368-4.95 0zm10.122-9.368c-.002-.414-.34-.75-.753-.753L8.322 0c-.413-.002-.746.33-.744.744.002.413.338.75.75.752l2.128.313c-.95.953-1.832 1.828-1.832 1.828-2.14-1.482-5.104-1.27-7.013.64-2.147 2.147-2.147 5.63 0 7.777 2.15 2.148 5.63 2.148 7.78 0 1.908-1.91 2.12-4.873.636-7.016l1.842-1.82.303 2.116c.003.414.34.75.753.753.413.002.746-.332.744-.745l-.52-4.073z" fill-rule="evenodd"/></svg>
+            {% endif %}
     </div>
     <div class = "row">
         {{main_macros.follow_mark(display_user,current_user)}}<br /><br />
@@ -39,11 +43,9 @@
             {%if display_user.relation() %}
                 <ul class="list-group">
                     <li class="list-group-item">
-                        我关注的人中{{display_user.relation()|length}}人关注了他<br>
+                        我关注的人中{{display_user.relation()|length}}人关注了{{ display_user.gender_text() }}<br>
                     {%for the_people in display_user.relation()%}
-                        <a href="{{url_for('people.people',username=the_people.username)}}" title="{{the_people.username}}">
-                            <img src="{{the_people.avatar| default('/static/images/1.jpg',true)}}" width="24" height="24" />
-                        </a>
+                        <a href="{{url_for('people.people',username=the_people.username)}}" title="{{the_people.username}}"><img src="{{people.get_avatar()}}" class="img-rounded" width="24" height="24" /></a>
                         {%endfor%}
                     </li>
                 </ul>
@@ -70,9 +72,9 @@
     {% for people in peoples %}
         <div class="row">
             <div class = "col-xs-3 col-sm-2">
-
-                    <img class="img-responsive img-rounded"  src="{{url_for('static',filename='images/male.svg')}}" />
-
+                <a href="{{url_for('people.people',username=people.username)}}">
+                    <img class="img-responsive img-rounded" src="{{people.get_avatar()}}" />
+                </a>
             </div>
 
             <div class = "col-xs-9 col-sm-10">
@@ -100,15 +102,15 @@
         {% for task in tasks %}
 
             <div class="row">
-                <h5>{{ main_macros.task_like_mark(task,current_user) }} {#点赞模块#}
-                <a href="{{url_for('people.people',username=task.user.username)}}"><img src="{{url_for('static',filename='images/1.jpg')}}" width="32" height="32" /></a>
-                <a href="{{url_for('people.people',username=task.user.username)}}" ><strong>{{task.user.username}}</strong></a> • <small>{{task.create_time}}</small></h5>
+                <h6>{{ main_macros.task_like_mark(task,current_user) }} {#点赞模块#}
+                <a href="{{url_for('people.people',username=task.user.username)}}"><img src="{{task.user.get_avatar()}}" class="img-rounded" width="30" height="30" /></a>
+                <a href="{{url_for('people.people',username=task.user.username)}}" >{{task.user.username}}</a> • <small>{{task.create_time}}</small></h6>
             </div>
 
             <div class="row">
-                <h6>
+                <h4>
                     <a href="{{url_for('task.page',task_id=task.id)}}"><strong>{{ task.title }}</strong></a>{{main_macros.task_status_mark(task)}}
-                </h6>
+                </h4>
             </div>
 
             <div class="row">
@@ -131,6 +133,7 @@
             没有内容可以展示哦
         </div>
     {%endif%}
+
 {% endmacro %}
 
 
@@ -152,12 +155,16 @@
         </div>
 
          <div class = "row">
+             <table class="table table-hover">
+                 <tbody>
         {% for comment in comments %}
-            <div class = "row">
-                {{comment.username()}}在{{comment.date}}说：
-                <br />{{comment.text}}
-            </div>
+                    <tr><td>
+                        <p class="text-muted small"><img src="{{comment.user.get_avatar()}}" class="img-rounded" width="30" height="30" /> {{comment.user.username}} 发表于 {{comment.date}}：</p>
+                        <p>{{comment.text}}</p>
+                    </td></tr>
         {% endfor %}
+                 </tbody>
+             </table>
          </div>
 
     {% else %}

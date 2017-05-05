@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% import "macros.html" as main_macros %}
 {% import "macros_block.html" as macros_block %}
 {% block title %}{{display_user.username}} - {{super()}}{% endblock %}
 
@@ -7,7 +6,7 @@
 <div class="col-lg-9">
     <div class="col-sm-12">
 
-        {{macros_block.show_task(current_user,tasks)}} {#展示tasks#}
+    {{macros_block.show_task(current_user,tasks)}} {#展示tasks#}
 
     </div>
 </div>

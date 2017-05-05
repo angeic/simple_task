@@ -12,7 +12,7 @@ login_blueprint = Blueprint(
 @login_blueprint.route('/', methods=['POST', 'GET'])
 def home():
     if 'user_id' in session:
-        return redirect(url_for('task.main'))
+        return redirect(url_for('task.home'))
     action = request.args.get('action')
     login_form = LoginForm()
     register_form = RegisterForm()

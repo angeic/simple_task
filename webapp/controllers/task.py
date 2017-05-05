@@ -14,7 +14,7 @@ task_blueprint = Blueprint(
 @login_required
 def home():
     # 最后期限倒序
-    tasks = Task.query.filter(Task.user_id == current_user.id, Task.status != 1).order_by(Task.status.asc(),Task.deadline.asc(), Task.id.asc()).all()
+    tasks = Task.query.filter(Task.user_id == current_user.id).order_by(Task.status.asc(),Task.deadline.asc(), Task.id.asc()).all()
     return render_template('task/task.html',
                            page_title='任务列表',
                            tasks=tasks,

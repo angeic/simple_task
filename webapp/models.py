@@ -30,6 +30,12 @@ class User(db.Model, UserMixin):
         lazy='dynamic'
     )
 
+    comments = db.relationship(
+        'Comment',
+        backref='user',
+        lazy='dynamic'
+    )
+
     following = db.relationship(
         'User',
         secondary=follows,
@@ -95,6 +101,21 @@ class User(db.Model, UserMixin):
     def relation(self):
         if current_user.username != self.username:
             return list(set(current_user.following.all()) & set(self.follower.all()))
+
+    def gender_text(self):
+        if self.gender == 0:
+            return '她'
+        else:
+            return '他'
+
+    def get_avatar(self):
+        if self.avatar:
+            return '/static/images/'+self.avatar
+        else:
+            if self.gender == 0:
+                return '/static/images/0.png'
+            else:
+                return '/static/images/1.png'
 
 
 class Task(db.Model):
@@ -181,10 +202,6 @@ class Comment(db.Model):
     text = db.Column(db.Text())
     date = db.Column(db.TIMESTAMP(), server_default=func.now())
     task_id = db.Column(db.Integer(), db.ForeignKey('task.id'), nullable=False)
-
-    def username(self):
-        user = User.query.filter_by(id=self.user_id).first()
-        return user.username
 
     def __repr__(self):
         return '<Comment: {}>'.format(self.text[:15])

@@ -13,6 +13,8 @@ people_blueprint = Blueprint(
 @login_required
 def people(username):
     display_user = User.query.filter_by(username=username).first()
+
+
     # 完成时间倒序
     if current_user in display_user.following.all():
         tasks = Task.query.filter(Task.user_id == display_user.id, Task.public_level.in_([2, 3])).order_by(Task.status.asc(),Task.deadline.asc(), Task.id.asc()).all()

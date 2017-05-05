@@ -18,28 +18,28 @@
 {#点赞#}
 {% macro task_like_mark(task,current_user) %}
 
-{% if current_user.username != task.user.username %}
-    {% if task.check_liked() %}
-        <input type="button" class="btn btn-primary btn-sm like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
+    {% if current_user.username != task.user.username %}
+        {% if task.check_liked() %}
+            <input type="button" class="btn btn-primary btn-sm like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
+        {% else %}
+            <input type="button" class="btn btn-default btn-sm like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
+        {% endif %}
     {% else %}
-        <input type="button" class="btn btn-default btn-sm like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
+        <input type="button" class="btn btn-default btn-sm" value="{{task.liked.all()|length}}赞" >
     {% endif %}
-{% else %}
-    <input type="button" class="btn btn-default btn-sm" value="{{task.liked.all()|length}}赞" >
-{% endif %}
 {% endmacro %}
 
 
 {#关注#}
 {% macro follow_mark(following_user,current_user) %}
 
-{% if current_user != following_user %}
-    {% if current_user.check_following(following_user.id) %}
-        <input type="button" class='btn btn-default btn-xs followbtn' value="取消关注" follow_id={{following_user.id}}>
-    {%else%}
-        <input type="button" class='btn btn-primary btn-xs followbtn' value="关注" follow_id={{following_user.id}}>
+    {% if current_user != following_user %}
+        {% if current_user.check_following(following_user.id) %}
+            <input type="button" class='btn btn-default btn-xs followbtn' value="取消关注" follow_id={{following_user.id}}>
+        {%else%}
+            <input type="button" class='btn btn-primary btn-xs followbtn' value="关注" follow_id={{following_user.id}}>
+        {%endif%}
     {%endif%}
-{%endif%}
 
 {% endmacro %}
 
