@@ -35,11 +35,12 @@ def callback():
             if user:
                 login_user(user, remember=True)
                 return redirect(url_for('task.home'))
+
             # 该用户未注册
             else:
                 get_wbuser = wbsession.get('https://api.weibo.com/2/users/show.json?access_token={}&uid={}'.format(token_data['access_token'], token_data['uid']))
                 wbuser_info = json.loads(get_wbuser.text)
-                print(get_wbuser.content)
+                # print(get_wbuser.content)
                 new_wb_user = User(wbuser_info['screen_name'])
                 new_wb_user.wb_reg(token_data['uid'])
                 db.session.add(new_wb_user)

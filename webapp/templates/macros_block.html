@@ -19,7 +19,7 @@
     <div class ="row">
         <div class="panel panel-default">
 
-            <div class="panel-body"><div class="IconGraf-iconWrapper"><svg viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg" class="IconGraf-icon" style="height:16px;width:16px;" width="16" height="16" aria-hidden="true"><g><path d="M.718 7.024c-.718 0-.718.63-.718.63l.996 9.693c0 .703.718.65.718.65h1.45c.916 0 .847-.65.847-.65V7.793c-.09-.88-.853-.79-.846-.79l-2.446.02zm11.727-.05S13.2 5.396 13.6 2.89C13.765.03 11.55-.6 10.565.53c-1.014 1.232 0 2.056-4.45 5.83C5.336 6.965 5 8.01 5 8.997v6.998c-.016 1.104.49 2 1.99 2h7.586c2.097 0 2.86-1.416 2.86-1.416s2.178-5.402 2.346-5.91c1.047-3.516-1.95-3.704-1.95-3.704l-5.387.007z"/></g></svg>
+            <div class="panel-body"><div class="IconGraf-iconWrapper"><svg viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg" class="IconGraf-icon" style="height:15px;width:15px;" width="15" height="15" aria-hidden="true"><g><path d="M.718 7.024c-.718 0-.718.63-.718.63l.996 9.693c0 .703.718.65.718.65h1.45c.916 0 .847-.65.847-.65V7.793c-.09-.88-.853-.79-.846-.79l-2.446.02zm11.727-.05S13.2 5.396 13.6 2.89C13.765.03 11.55-.6 10.565.53c-1.014 1.232 0 2.056-4.45 5.83C5.336 6.965 5 8.01 5 8.997v6.998c-.016 1.104.49 2 1.99 2h7.586c2.097 0 2.86-1.416 2.86-1.416s2.178-5.402 2.346-5.91c1.047-3.516-1.95-3.704-1.95-3.704l-5.387.007z"/></g></svg>
             </div><strong>个人成就</strong></div>
             <table class="table">
                 <tr><td>
@@ -45,7 +45,7 @@
                     <li class="list-group-item">
                         我关注的人中{{display_user.relation()|length}}人关注了{{ display_user.gender_text() }}<br>
                     {%for the_people in display_user.relation()%}
-                        <a href="{{url_for('people.people',username=the_people.username)}}" title="{{the_people.username}}"><img src="{{people.get_avatar()}}" class="img-rounded" width="24" height="24" /></a>
+                        <a href="{{url_for('people.people',username=the_people.username)}}" title="{{the_people.username}}"><img src="{{the_people.get_avatar()}}" class="img-rounded" width="24" height="24" /></a>
                         {%endfor%}
                     </li>
                 </ul>
@@ -102,14 +102,14 @@
         {% for task in tasks %}
 
             <div class="row">
-                <h6>{{ main_macros.task_like_mark(task,current_user) }} {#点赞模块#}
+                <h6>
                 <a href="{{url_for('people.people',username=task.user.username)}}"><img src="{{task.user.get_avatar()}}" class="img-rounded" width="30" height="30" /></a>
                 <a href="{{url_for('people.people',username=task.user.username)}}" >{{task.user.username}}</a> • <small>{{task.create_time}}</small></h6>
             </div>
 
             <div class="row">
                 <h4>
-                    <a href="{{url_for('task.page',task_id=task.id)}}"><strong>{{ task.title }}</strong></a>{{main_macros.task_status_mark(task)}}
+                    {{ main_macros.task_like_mark(task,current_user) }}{#点赞模块#}{{main_macros.task_status_mark(task)}}<a href="{{url_for('task.page',task_id=task.id)}}"><strong>{{ task.title }}</strong></a>
                 </h4>
             </div>
 

@@ -1,6 +1,6 @@
 {#显示task状态#}
 {% macro task_status_mark(task) %}
-
+<span class="transparent_class">
     {% if task.status == 1 %}
         <input type="button" class="btn btn-primary btn-xs disabled" value="已完成">
     {%else%}
@@ -12,7 +12,7 @@
             <input type="button" class="btn btn-success btn-xs disabled" value="未完成"> {#未超时#}
         {%endif%}
     {%endif%}
-
+</span>
 {% endmacro %}
 
 {#点赞#}
@@ -20,12 +20,12 @@
 
     {% if current_user.username != task.user.username %}
         {% if task.check_liked() %}
-            <input type="button" class="btn btn-primary btn-sm like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
+            <input type="button" class="btn btn-primary btn-xs like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
         {% else %}
-            <input type="button" class="btn btn-default btn-sm like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
+            <input type="button" class="btn btn-default btn-xs like_btn" tid={{task.id}} value="{{task.liked.all()|length}}赞" >
         {% endif %}
     {% else %}
-        <input type="button" class="btn btn-default btn-sm" value="{{task.liked.all()|length}}赞" >
+        <input type="button" class="btn btn-default btn-xs" value="{{task.liked.all()|length}}赞" >
     {% endif %}
 {% endmacro %}
 

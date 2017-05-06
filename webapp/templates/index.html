@@ -11,69 +11,75 @@
 <div class = "container">
 
 
-<div class="col-sm-4 col-sm-offset-4">
-    <div class="row page-header">
-        <h1 class="text-center">SimpleTask</h1>
+    <div class="col-sm-4 col-sm-offset-4">
+        <div class="row page-header">
+            <h1 class="text-center">SimpleTask</h1>
+        </div>
+
+        <div class="row">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{category}} alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            {{message}}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {%if action == 'register' %}
+                <form method="post">{{register_form.hidden_tag()}}
+                    <div class="form-group">
+                        <div class="row text-center">
+                            <a href="{{url_for('login.home') }}" class="btn btn-default">登录</a>
+                            <a href="{{url_for('login.home',action='reg')}}" class="btn btn-default active">注册</a>
+                            <a href="http://t.cn/RX8Pg6A"><img src="http://img.t.sinajs.cn/t4/appstyle/open/images/website/loginbtn/loginbtn_06.png" /></a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{register_form.username(class='form-control input-lg',placeholder='账号',id="inputError")}}{%if register_form.username.errors%}{% for e in register_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{register_form.email(class='form-control input-lg',placeholder='Email')}}{%if register_form.email.errors%}{% for e in register_form.email.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{register_form.password(class='form-control input-lg',placeholder='密码')}}{% if register_form.password.errors %}{% for e in register_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{register_form.password_verify(class='form-control input-lg',placeholder='确认密码')}}{% if register_form.password_verify.errors %}{% for e in register_form.password_verify.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ register_form.register_submit(class="btn btn-primary btn-block") }}
+                    </div>
+                </form>
+            {%else%}
+                <form method="post">{{login_form.hidden_tag()}}
+                    <div class="form-group">
+                        <div class="text-center">
+                            <a href="{{url_for('login.home') }}" class="btn btn-default active">登录</a>
+                            <a href="{{url_for('login.home',action='register')}}" class="btn btn-default">注册</a>
+                            <a href="http://t.cn/RX8Pg6A"><img src="http://img.t.sinajs.cn/t4/appstyle/open/images/website/loginbtn/loginbtn_06.png" /></a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{login_form.username(class='form-control input-lg',placeholder='账号')}}{%if login_form.username.errors%}{% for e in login_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{login_form.password(class='form-control input-lg',placeholder='密码')}}{% if login_form.password.errors %}{% for e in login_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="remember" name="remember"><label>下次自动登录</label >
+                    </div>
+                    <div class="form-group">
+                        {{ login_form.login_submit(class="btn btn-primary btn-block") }}
+                    </div>
+                </form>
+            {%endif%}
+        </div>
+
     </div>
-
-{%if action == 'register' %}
-<div class="row">
-
-    <form method="post">{{register_form.hidden_tag()}}
-        <div class="form-group">
-            <div class="row text-center">
-                <a href="{{url_for('login.home') }}" class="btn btn-default">登录</a>
-                <a href="{{url_for('login.home',action='register')}}" class="btn btn-default active">注册</a>
-                <a href="http://t.cn/RX8Pg6A"><img src="http://img.t.sinajs.cn/t4/appstyle/open/images/website/loginbtn/loginbtn_06.png" /></a>
-            </div>
-        </div>
-        <div class="form-group">
-            {{register_form.username(class='form-control input-lg',placeholder='账号',id="inputError")}}{%if register_form.username.errors%}{% for e in register_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-        </div>
-        <div class="form-group">
-            {{register_form.email(class='form-control input-lg',placeholder='Email')}}{%if register_form.email.errors%}{% for e in register_form.email.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-        </div>
-        <div class="form-group">
-            {{register_form.password(class='form-control input-lg',placeholder='密码')}}{% if register_form.password.errors %}{% for e in register_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-        </div>
-        <div class="form-group">
-            {{register_form.password_verify(class='form-control input-lg',placeholder='确认密码')}}{% if register_form.password_verify.errors %}{% for e in register_form.password_verify.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-        </div>
-        <div class="form-group">
-            {{ register_form.register_submit(class="btn btn-primary btn-block") }}
-        </div>
-    </form>
-</div>
-{%else%}
-
-
-<div class="row">
-    <form method="post">{{login_form.hidden_tag()}}
-        <div class="form-group">
-            <div class="text-center">
-                <a href="{{url_for('login.home') }}" class="btn btn-default active">登录</a>
-                <a href="{{url_for('login.home',action='register')}}" class="btn btn-default">注册</a>
-                <a href="http://t.cn/RX8Pg6A"><img src="http://img.t.sinajs.cn/t4/appstyle/open/images/website/loginbtn/loginbtn_06.png" /></a>
-            </div>
-        </div>
-        <div class="form-group">
-            {{login_form.username(class='form-control input-lg',placeholder='账号')}}{%if login_form.username.errors%}{% for e in login_form.username.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-        </div>
-        <div class="form-group">
-            {{login_form.password(class='form-control input-lg',placeholder='密码')}}{% if login_form.password.errors %}{% for e in login_form.password.errors%}<p class="help-block">{{e}}</p>{% endfor %}{% endif %}
-        </div>
-        <div class="form-group">
-            <input type="checkbox" id="remember" name="remember"><label>下次自动登录</label >
-        </div>
-        <div class="form-group">
-            {{ login_form.login_submit(class="btn btn-primary btn-block") }}
-        </div>
-    </form>
-</div>
-
-
-{%endif%}
-</div>
 </div>
 
 

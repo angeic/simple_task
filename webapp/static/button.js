@@ -1,5 +1,3 @@
-
-
 //关注
 $(document).ready(function(){
   $(".followbtn").click(function(){
@@ -11,7 +9,6 @@ $(document).ready(function(){
   });
 });
 
-
 //任务完成
 $(document).ready(function(){
   $(".task-done-btn").click(function(){
@@ -21,7 +18,6 @@ $(document).ready(function(){
         });
   });
 });
-
 
 //任务删除
 $(document).ready(function(){
@@ -35,8 +31,6 @@ $(document).ready(function(){
   });
 });
 
-
-
 //评论开关
 $(document).ready(function(){
   $(".comment_allow_btn").click(function(){
@@ -47,7 +41,6 @@ $(document).ready(function(){
         });
   });
 });
-
 
 //点赞
 $(document).ready(function(){
@@ -62,7 +55,6 @@ $(document).ready(function(){
 });
 
 //创建任务
-
 $(document).ready(function(){
   $(".add-task-btn").click(function(){
       window.location.href="/task/add"

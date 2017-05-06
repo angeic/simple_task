@@ -4,21 +4,20 @@
 {% block title %}{{task.title}} - {{super()}}{% endblock %}
 
 {% block body %}
-<div class="col-lg-9">
+<div class="col-sm-9">
 
         <div class = "row">{# 任务头 #}
-            <h3>{{ task.title }}{{main_macros.task_status_mark(task)}}</h3>
-            <small>{{task.user.username}} 创建于{{task.create_time}}，计划完成时间{{task.deadline}}{% if task.is_overtime() %}，{{task.over_time() }}{%endif%}</small>
+            <h3>{{ main_macros.task_like_mark(task,current_user) }} {#点赞模块#}{{main_macros.task_status_mark(task)}}{{ task.title }}</h3>
+            <small><a href="{{url_for('people.people',username=current_user.username)}}"><img src="{{current_user.get_avatar()}}" width="20" height="20" class="img-rounded" />{{task.user.username}}</a> 创建于{{task.create_time}}，计划完成时间{{task.deadline}}{% if task.is_overtime() %}，{{task.over_time() }}{%endif%}</small>
         </div>
 
-
         <div class = "row">{# 任务内容 #}
-            <p>{{ task.text }}</p>
+            <p class="text-muted">{{ task.text }}</p>
         </div>
 
 
         <div class = "row">{# 功能按钮 start #}
-            {{ main_macros.task_like_mark(task,current_user) }} {#点赞模块#}
+
 
             {#任务创建人#}
             {% if task.user.username == current_user.username %}
