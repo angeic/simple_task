@@ -1,4 +1,4 @@
-from flask import Blueprint, url_for, redirect, render_template, flash, abort, request
+from flask import Blueprint, url_for, redirect, render_template, flash, abort, request, current_app
 from webapp.models import Task, db, Comment
 from webapp.form import TaskForm, EditForm, CommentForm
 from flask_login import login_required, current_user

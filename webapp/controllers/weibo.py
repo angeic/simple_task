@@ -1,9 +1,8 @@
-from flask import Blueprint, url_for, redirect, flash, session, request
+from flask import Blueprint, url_for, redirect, flash, session, request, current_app
 from webapp.models import User, db
 from flask_login import login_user
 import requests
 import json
-from webapp.config import Config
 
 weibo_blueprint = Blueprint(
     'weibo',
@@ -17,8 +16,8 @@ def callback():
     if code:
         wbsession = requests.Session()
         postdata = {
-            'client_id': Config.WBAppKey,
-            'client_secret': Config.WBAppSecret,
+            'client_id': current_app.config['WB_APP_KEY'],
+            'client_secret': current_app.config['WB_APP_SECRET'],
             'grant_type': 'authorization_code',
             'code': code,
             'redirect_uri': 'http://simple.loadmemory.org/wb/callback'

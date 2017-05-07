@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, session, flash, redirect, url_for, abort
-from webapp.models import User, Likes, db, Task, Comment
+from flask import Blueprint, render_template, request, session
+from webapp.models import User, Likes, db, Task
 from flask_login import login_required, current_user
-from webapp.form import CommentForm
+
 
 people_blueprint = Blueprint(
     'people',
