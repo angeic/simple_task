@@ -118,8 +118,8 @@ class User(db.Model, UserMixin):
 
     # 圈子内容
     def circle_task(self):
-        query_1 = 'and_(Task.user_id.in_([user.id for user in self.following.all()]), Task.public_level == "3")' if self.following.all() else None  # 关注的
-        query_2 = 'and_(Task.user_id.in_([user.id for user in self.friends()]), Task.public_level == "2")' if self.friends() else None  # 互相关注的
+        query_1 = and_(Task.user_id.in_([user.id for user in self.following.all()]), Task.public_level == '3') if self.following.all() else None  # 关注的
+        query_2 = and_(Task.user_id.in_([user.id for user in self.friends()]), Task.public_level == '2') if self.friends() else None  # 互相关注的
         return Task.query.filter(or_(Task.user_id == self.id, query_1, query_2)
         ).order_by(Task.create_time.desc()).all()
 
@@ -185,11 +185,14 @@ class Task(db.Model):
         else:
             pass
 
+    # 给任务点赞的所有user_id
+    def liked_user(self):
+        return list(u.user_id for u in self.liked.all())
+
     # 判断是否已点赞
     def check_liked(self):
-        for uid in self.liked.all():
-            if str(uid) == session['user_id']:
-                return True
+        if current_user.id in self.liked_user():
+            return True
 
     # 距离超时一小时
     def one_hour_deadline(self):
