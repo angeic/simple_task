@@ -1,4 +1,4 @@
-from flask import Blueprint, url_for, redirect, render_template, flash, abort, request, current_app
+from flask import Blueprint, url_for, redirect, render_template, flash, abort, request
 from webapp.models import Task, db, Comment
 from webapp.form import TaskForm, EditForm, CommentForm
 from flask_login import login_required, current_user
@@ -14,11 +14,8 @@ task_blueprint = Blueprint(
 @login_required
 def home():
     # 最后期限倒序
-    tasks = Task.query.filter(Task.user_id == current_user.id).order_by(Task.status.asc(),Task.deadline.asc(), Task.id.asc()).all()
-    return render_template('task/task.html',
-                           page_title='任务列表',
-                           tasks=tasks,
-                           )
+    tasks = Task.query.filter(Task.user_id == current_user.id).order_by(Task.status.asc(), Task.deadline.asc(), Task.id.asc()).all()
+    return render_template('task/task.html', page_title='任务列表', tasks=tasks)
 
 
 @task_blueprint.route('/done')
@@ -26,10 +23,7 @@ def home():
 def done():
     # 完成时间倒序
     tasks = Task.query.filter(Task.user_id == current_user.id, Task.status == 1).order_by(Task.id.desc()).all()
-    return render_template('task/task.html',
-                           page_title='已完成',
-                           tasks=tasks
-                           )
+    return render_template('task/task.html', page_title='已完成', tasks=tasks)
 
 
 @task_blueprint.route('/add', methods=['POST', 'GET'])
@@ -82,7 +76,7 @@ def edit(task_id):
             flash('任务修改成功！', category='info')
             return redirect(url_for('task.page', task_id=task.id))
     if task.status == 1:
-        flash('该任务已经完成，只能修改隐私和评论状态', category='info')
+        flash('该任务已经完成，只能修改隐私和评论开关', category='info')
     form.title.data = task.title
     form.text.data = task.text
     form.deadline.data = task.deadline
@@ -109,7 +103,6 @@ def page(task_id):
         new_comment.user_id = current_user.id
         db.session.add(new_comment)
         db.session.commit()
-        # flash('评论提交成功', category='info')
         return redirect(url_for('task.page', task_id=task.id))
     return render_template('task/task_page.html',
                            task=task,
@@ -121,10 +114,11 @@ def page(task_id):
 @task_blueprint.route('/do')
 @login_required
 def do():
-    task_id = request.args.get('id')
-    task = Task.query.get_or_404(task_id)
 
-    if current_user.id == task.user_id:
+    task_id = request.args.get('id')
+    task = Task.query.get(task_id)
+
+    if task_id and current_user.id == task.user_id:
 
         comment_switch = request.args.get('comment')
         if comment_switch in ['0', '1']:
@@ -145,7 +139,7 @@ def do():
             })
 
         db.session.commit()
-        return 'hello'
+        return 'success'
 
     else:
         abort(403)

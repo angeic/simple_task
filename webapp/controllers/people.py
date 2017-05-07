@@ -22,20 +22,16 @@ def people(username):
     else:
         tasks = Task.query.filter(Task.user_id == display_user.id, Task.public_level == 3).order_by(Task.status.asc(),Task.deadline.asc(), Task.id.asc()).all()
 
-    return render_template('people/people.html',
-                           display_user=display_user,
-                           tasks=tasks
-                           )
+    return render_template('people/people.html', display_user=display_user, tasks=tasks)
 
 
 @people_blueprint.route('/<username>/following')
 @login_required
 def following(username):
     display_user = User.query.filter_by(username=username).first()
-    people_list = display_user.following.all()
     return render_template('explore/home.html',
                            page_title='{}关注的人'.format(username),
-                           people_list=people_list,
+                           people_list=display_user.following.all(),
                            display_user=display_user
                            )
 
@@ -44,18 +40,16 @@ def following(username):
 @login_required
 def follower(username):
     display_user = User.query.filter_by(username=username).first()
-    people_list = display_user.follower.all()
     return render_template('explore/home.html',
                            page_title='关注{}的人'.format(username),
-                           people_list=people_list,
-                           display_user=display_user
+                           display_user=display_user,
+                           people_list=display_user.follower.all()
                            )
 
 
 @people_blueprint.route('/do')
 @login_required
 def do():
-
     # 关注模块
     follow_id = request.args.get('follow_id')
     if follow_id:

@@ -8,7 +8,6 @@ from flask import session
 
 db = SQLAlchemy(app)
 
-
 follows = db.Table('follows',
                    db.Column('user_id', db.ForeignKey('user.id')),
                    db.Column('follow_id', db.ForeignKey('user.id'))
@@ -103,17 +102,25 @@ class User(db.Model, UserMixin):
             return list(set(current_user.following.all()) & set(self.follower.all()))
 
     def gender_text(self):
-        return '他'if self.gender else '她'
+        return '他' if self.gender else '她'
 
     # 取用户头像，为空则取默认头像
     def get_avatar(self):
         if self.avatar:
-            return '/static/images/'+self.avatar
+            return '/static/images/' + self.avatar
         else:
             if self.gender == 0:
                 return '/static/images/0.png'
             else:
                 return '/static/images/1.png'
+
+    # 圈子内容
+    def circle_task(self):
+        return Task.query.filter(
+            or_(and_(Task.user_id.in_([user.id for user in self.following.all()]), Task.public_level == '3'),  # 关注的
+                and_(Task.user_id.in_([user.id for user in current_user.friends()]), Task.public_level == '2'),  # 互相关注的
+                Task.user_id == self.id)  # 自己的
+        ).order_by(Task.create_time.desc()).all()
 
 
 class Task(db.Model):
@@ -192,7 +199,8 @@ class Task(db.Model):
     # 判断当前用户是否有权限查看当前task
     def task_auth(self):
         task_user = User.query.get(self.user_id)
-        if current_user.id == self.user_id or self.public_level == 3 or (current_user in task_user.follower.all() and self.public_level == 2):
+        if current_user.id == self.user_id or self.public_level == 3 or (
+                current_user in task_user.follower.all() and self.public_level == 2):
             return True
         else:
             return False

@@ -2,8 +2,11 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin, current_user
 from sqlalchemy.sql import func
+from sqlalchemy.sql.expression import or_, and_
 from datetime import datetime
 from flask import session, abort
+
+
 db = SQLAlchemy()
 
 
@@ -112,6 +115,13 @@ class User(db.Model, UserMixin):
                 return '/static/images/0.png'
             else:
                 return '/static/images/1.png'
+
+    # 圈子内容
+    def circle_task(self):
+        query_1 = 'and_(Task.user_id.in_([user.id for user in self.following.all()]), Task.public_level == "3")' if self.following.all() else None  # 关注的
+        query_2 = 'and_(Task.user_id.in_([user.id for user in self.friends()]), Task.public_level == "2")' if self.friends() else None  # 互相关注的
+        return Task.query.filter(or_(Task.user_id == self.id, query_1, query_2)
+        ).order_by(Task.create_time.desc()).all()
 
 
 class Task(db.Model):
