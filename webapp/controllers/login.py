@@ -17,14 +17,14 @@ def home():
     login_form = LoginForm()
     register_form = RegisterForm()
 
-    if action != 'reg':
+    if action != 'register':
         if login_form.validate_on_submit():
             user = User.query.filter_by(username=login_form.username.data).first()
             login_user(user, remember=login_form.remember.data)
             flash('欢迎回来，{}'.format(user.username), category='success')
             return redirect(url_for('task.home'))
 
-    if action == 'reg':
+    if action == 'register':
         if register_form.validate_on_submit():
             user = User.query.filter_by(username=register_form.username.data).first()
             login_user(user, remember=False)
