@@ -1,6 +1,12 @@
 from flask_login import LoginManager
+from flask_redis import FlaskRedis
+from flask_sqlalchemy import SQLAlchemy
+from flask_alembic import Alembic
 
 login_manager = LoginManager()
+redis_store = FlaskRedis()
+db = SQLAlchemy()
+alembic = Alembic()
 
 
 login_manager.login_view = 'login.home'

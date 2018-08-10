@@ -1,13 +1,10 @@
-from flask_sqlalchemy import SQLAlchemy
+from webapp.extensions import db
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin, current_user
 from sqlalchemy.sql import func
 from sqlalchemy.sql.expression import or_, and_
 from datetime import datetime
-from flask import session, abort
-
-
-db = SQLAlchemy()
+from flask import session
 
 
 follows = db.Table('follows',
