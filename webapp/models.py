@@ -17,7 +17,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(20), unique=True)
     bio = db.Column(db.String(100))
-    gender = db.Column(db.Boolean, default=1)  # 1 男 0 女
+    gender = db.Column(db.SmallInteger(), default=0)  # 1 男 2 女 0 未填写
     email = db.Column(db.String(50), unique=True, index=True)
     password = db.Column(db.String(255))
     reg_date = db.Column(db.TIMESTAMP(), server_default=func.now())
