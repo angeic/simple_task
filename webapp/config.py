@@ -31,5 +31,10 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
 
-    WBAppKey = get_config('weibo', 'app_key')
-    WBAppSecret = get_config('weibo', 'app_secret')
+    # Celery 配置
+    CELERY_BROKER_URL = get_config('celery', 'uri')
+    CELERY_RESULT_BACKEND = get_config('celery', 'uri')
+
+    # 微博接口配置
+    WB_APP_KEY = get_config('weibo', 'app_key')
+    WB_APP_SECRET = get_config('weibo', 'app_secret')

@@ -11,3 +11,6 @@ name = simple_task
 [weibo]
 app_key =
 app_secret =
+
+[celery]
+uri =
